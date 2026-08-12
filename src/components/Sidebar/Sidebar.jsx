@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import styles from "./Sidebar.module.css";
 import {
@@ -19,7 +19,28 @@ import {
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
+  const [tournaments, setTournaments] = useState([]);
   const location = useLocation();
+
+  useEffect(() => {
+    const fetchTournaments = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments`,
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          setTournaments(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching tournaments:", error);
+      }
+    };
+
+    fetchTournaments();
+  }, []);
 
   const isNissanActive = location.pathname.startsWith("/nissan");
 
@@ -29,6 +50,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const toggleTournamentsMenu = () => {
     setIsTournamentsOpen(!isTournamentsOpen);
   };
+
   return (
     <div
       className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}
