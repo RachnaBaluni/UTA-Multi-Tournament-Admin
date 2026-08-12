@@ -121,6 +121,22 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             className={({ isActive }) => (isActive ? styles.active : "")}
             onClick={toggleSidebar}
           >
+            <li className={styles.tournamentSection}>
+              <div className={styles.tournamentTitle}>
+                <FiCalendar className={styles.icon} />
+                <span>Tournaments</span>
+              </div>
+
+              <ul className={styles.tournamentList}>
+                {tournaments.map((tournament) => (
+                  <li key={tournament._id}>
+                    <span className={styles.tournamentName}>
+                      {tournament.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </li>
             <FiCalendar className={styles.icon} /> Main Events
           </NavLink>
         </li>
