@@ -1,0 +1,98 @@
+.container {
+  padding: 20px;
+}
+
+.title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.tournamentList {
+  width: 100%;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.tournamentCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.3s;
+}
+
+.tournamentCard:last-child {
+  border-bottom: none;
+}
+
+.tournamentCard:hover {
+  background-color: #fafafa;
+}
+
+.tournamentCard h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #333;
+}
+
+.tournamentCard p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.tournamentCard strong {
+  color: #333;
+}
+
+.editButton {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s;
+}
+
+.editButton:hover {
+  background-color: #1b5e20;
+}
+
+.message {
+  color: #555;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.error {
+  color: #c62828;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .tournamentCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .editButton {
+    align-self: flex-end;
+  }
+}
