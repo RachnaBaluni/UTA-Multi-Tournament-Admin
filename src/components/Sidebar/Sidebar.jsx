@@ -18,6 +18,7 @@ import {
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
+  const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const location = useLocation();
 
   const isNissanActive = location.pathname.startsWith("/nissan");
@@ -25,7 +26,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const toggleNissanMenu = () => {
     setIsNissanOpen(!isNissanOpen);
   };
-
+  const toggleTournamentsMenu = () => {
+    setIsTournamentsOpen(!isTournamentsOpen);
+  };
   return (
     <div
       className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}
@@ -46,6 +49,50 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <FiGrid className={styles.icon} /> Dashboard
           </NavLink>
         </li>
+
+        <li className={styles.collapsible}>
+          <div
+            className={styles.collapsibleHeader}
+            onClick={toggleTournamentsMenu}
+          >
+            <FiCalendar className={styles.icon} />
+
+            <span>Tournaments</span>
+
+            <FiChevronDown
+              className={`${styles.chevron} ${
+                isTournamentsOpen ? styles.rotate : ""
+              }`}
+            />
+          </div>
+
+          {isTournamentsOpen && (
+            <ul className={styles.submenu}>
+              <li>
+                <NavLink
+                  to="/tournaments/create"
+                  className={({ isActive }) => (isActive ? styles.active : "")}
+                  onClick={toggleSidebar}
+                >
+                  <FiEdit className={styles.icon} />
+                  Create Tournament
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/tournaments/edit"
+                  className={({ isActive }) => (isActive ? styles.active : "")}
+                  onClick={toggleSidebar}
+                >
+                  <FiEdit className={styles.icon} />
+                  Edit Tournament
+                </NavLink>
+              </li>
+            </ul>
+          )}
+        </li>
+
         <li>
           <NavLink
             to="/events"
