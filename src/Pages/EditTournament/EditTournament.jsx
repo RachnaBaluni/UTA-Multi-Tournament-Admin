@@ -67,58 +67,77 @@ const EditTournament = () => {
         <div className={styles.editForm}>
           <h2>Edit Tournament Details</h2>
 
-          <input
-            type="text"
-            value={editingTournament.name}
-            onChange={(e) =>
-              setEditingTournament({
-                ...editingTournament,
-                name: e.target.value,
-              })
-            }
-            placeholder="Tournament Name"
-          />
+          <div className={styles.formGroup}>
+            <label>Tournament Name</label>
 
-          <input
-            type="date"
-            value={editingTournament.startDate?.slice(0, 10)}
-            onChange={(e) =>
-              setEditingTournament({
-                ...editingTournament,
-                startDate: e.target.value,
-              })
-            }
-          />
+            <input
+              type="text"
+              value={editingTournament.name}
+              onChange={(e) =>
+                setEditingTournament({
+                  ...editingTournament,
+                  name: e.target.value,
+                })
+              }
+              placeholder="Enter tournament name"
+            />
+          </div>
 
-          <input
-            type="date"
-            value={editingTournament.endDate?.slice(0, 10)}
-            onChange={(e) =>
-              setEditingTournament({
-                ...editingTournament,
-                endDate: e.target.value,
-              })
-            }
-          />
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Start Date</label>
 
-          <select
-            value={editingTournament.status}
-            onChange={(e) =>
-              setEditingTournament({
-                ...editingTournament,
-                status: e.target.value,
-              })
-            }
-          >
-            <option value="Upcoming">Upcoming</option>
-            <option value="Active">Active</option>
-            <option value="Completed">Completed</option>
-          </select>
+              <input
+                type="date"
+                value={editingTournament.startDate?.slice(0, 10)}
+                onChange={(e) =>
+                  setEditingTournament({
+                    ...editingTournament,
+                    startDate: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>End Date</label>
+
+              <input
+                type="date"
+                value={editingTournament.endDate?.slice(0, 10)}
+                onChange={(e) =>
+                  setEditingTournament({
+                    ...editingTournament,
+                    endDate: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Status</label>
+
+            <select
+              value={editingTournament.status}
+              onChange={(e) =>
+                setEditingTournament({
+                  ...editingTournament,
+                  status: e.target.value,
+                })
+              }
+            >
+              <option value="Upcoming">Upcoming</option>
+              <option value="Active">Active</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
 
           <div className={styles.formActions}>
             <button className={styles.saveButton} onClick={handleUpdate}>
               Save Changes
             </button>
+
             <button
               className={styles.cancelButton}
               onClick={() => setEditingTournament(null)}
