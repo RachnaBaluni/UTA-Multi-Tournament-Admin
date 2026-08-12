@@ -18,6 +18,7 @@ import RegistrationFields from "./Pages/Nissan/RegistrationFields/RegistrationFi
 import ViewPlayerJourney from "./Pages/Nissan/Journey/ViewPlayerJourney";
 import OrderOfPlay from "./Pages/Nissan/OrderOfPlay/OrderOfPlay";
 import EditTournament from "./Pages/EditTournament/EditTournament";
+import CreateTournament from "./Pages/CreateTournament/CreateTournament";
 
 import { Toaster } from "sonner";
 
@@ -48,7 +49,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/tournaments/create"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <CreateTournament />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/users"
           element={
