@@ -6,6 +6,7 @@ const EditTournament = () => {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editingTournament, setEditingTournament] = useState(null);
 
   const BACKEND = import.meta.env.VITE_APP_BACKEND_URL;
 
@@ -31,9 +32,102 @@ const EditTournament = () => {
     }
   };
 
+  const handleUpdate = async () => {
+    try {
+      setError("");
+
+      const response = await axios.put(
+        `${BACKEND}/api/tournaments/${editingTournament._id}`,
+        {
+          name: editingTournament.name,
+          startDate: editingTournament.startDate,
+          endDate: editingTournament.endDate,
+          status: editingTournament.status,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (response.data.success) {
+        setEditingTournament(null);
+        fetchTournaments();
+      }
+    } catch (error) {
+      console.error("Error updating tournament:", error);
+
+      setError(error.response?.data?.message || "Unable to update tournament.");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Edit Tournament</h1>
+      {editingTournament && (
+        <div className={styles.editForm}>
+          <h2>Edit Tournament Details</h2>
+
+          <input
+            type="text"
+            value={editingTournament.name}
+            onChange={(e) =>
+              setEditingTournament({
+                ...editingTournament,
+                name: e.target.value,
+              })
+            }
+            placeholder="Tournament Name"
+          />
+
+          <input
+            type="date"
+            value={editingTournament.startDate?.slice(0, 10)}
+            onChange={(e) =>
+              setEditingTournament({
+                ...editingTournament,
+                startDate: e.target.value,
+              })
+            }
+          />
+
+          <input
+            type="date"
+            value={editingTournament.endDate?.slice(0, 10)}
+            onChange={(e) =>
+              setEditingTournament({
+                ...editingTournament,
+                endDate: e.target.value,
+              })
+            }
+          />
+
+          <select
+            value={editingTournament.status}
+            onChange={(e) =>
+              setEditingTournament({
+                ...editingTournament,
+                status: e.target.value,
+              })
+            }
+          >
+            <option value="Upcoming">Upcoming</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+          </select>
+
+          <div className={styles.formActions}>
+            <button className={styles.saveButton} onClick={handleUpdate}>
+              Save Changes
+            </button>
+            <button
+              className={styles.cancelButton}
+              onClick={() => setEditingTournament(null)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading && <p className={styles.message}>Loading tournaments...</p>}
 
@@ -64,8 +158,12 @@ const EditTournament = () => {
                   <strong>Status:</strong> {tournament.status}
                 </p>
               </div>
-
-              <button className={styles.editButton}>Edit</button>
+              <button
+                className={styles.editButton}
+                onClick={() => setEditingTournament(tournament)}
+              >
+                Edit
+              </button>{" "}
             </div>
           ))}
         </div>
