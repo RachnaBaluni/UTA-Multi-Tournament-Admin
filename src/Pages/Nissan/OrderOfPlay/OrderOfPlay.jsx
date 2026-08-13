@@ -386,8 +386,14 @@ export default function OrderOfPlay() {
   const getMatches = async (categories, rounds, date) => {
     const filteredEvents =
       categories.length > 0
-        ? events.filter((ev) => categories.includes(ev.name))
-        : events;
+        ? events.filter(
+            (ev) =>
+              categories.includes(ev.name) &&
+              String(ev.tournamentId) === String(tournamentId),
+          )
+        : events.filter(
+            (ev) => String(ev.tournamentId) === String(tournamentId),
+          );
 
     const allResponses = await Promise.all(
       filteredEvents.map((ev) =>
