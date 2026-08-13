@@ -278,23 +278,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             ONGOING TOURNAMENT
         ============================ */}
         <li className={styles.collapsible}>
-          <div
-            className={`${styles.collapsibleHeader} ${
-              isNissanActive ? styles.active : ""
-            }`}
-            onClick={toggleNissanMenu}
-          >
-            <FiCalendar className={styles.icon} />
-
-            <span>Ongoing Tournament</span>
-
-            <FiChevronDown
-              className={`${styles.chevron} ${
-                isNissanOpen ? styles.rotate : ""
-              }`}
-            />
-          </div>
-
           {isNissanOpen && (
             <ul className={styles.submenu}>
               {/* UPDATE EVENTS */}
