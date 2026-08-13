@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import api from "../../../api";
 import styles from "./ViewPlayerList.module.css";
 import { FiTrash2 } from "react-icons/fi";
@@ -6,6 +7,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
 const ViewPlayerList = () => {
+  const { tournamentId } = useParams();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nameSort, setNameSort] = useState("");
@@ -19,7 +21,7 @@ const ViewPlayerList = () => {
       const start = Date.now();
 
       const res = await api.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/player/details`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/player/details/${tournamentId}`,
         {
           withCredentials: true,
         },
@@ -71,8 +73,10 @@ const ViewPlayerList = () => {
   };
 
   useEffect(() => {
-    fetchPlayers();
-  }, []);
+    if (tournamentId) {
+      fetchPlayers();
+    }
+  }, [tournamentId]);
 
   const handleToggleFeeStatus = async (playerId) => {
     try {
