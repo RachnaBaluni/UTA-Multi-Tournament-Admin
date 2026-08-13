@@ -117,7 +117,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           >
             <FiCalendar className={styles.icon} />
 
-            <span>Tournaments</span>
+            <span>Manage Tournaments</span>
 
             <FiChevronDown
               className={`${styles.chevron} ${
