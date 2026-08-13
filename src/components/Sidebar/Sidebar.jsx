@@ -21,6 +21,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const [tournaments, setTournaments] = useState([]);
+  const [openTournaments, setOpenTournaments] = useState({});
 
   const location = useLocation();
 
@@ -61,6 +62,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   const toggleTournamentsMenu = () => {
     setIsTournamentsOpen(!isTournamentsOpen);
+  };
+
+  const toggleTournament = (tournamentId) => {
+    setOpenTournaments((prev) => ({
+      ...prev,
+      [tournamentId]: !prev[tournamentId],
+    }));
   };
 
   return (
@@ -165,13 +173,114 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         ============================ */}
         {tournaments.map((tournament) => (
           <li className={styles.tournamentItem} key={tournament._id}>
-            <div className={styles.collapsibleHeader}>
+            {/* TOURNAMENT HEADER */}
+            <div
+              className={styles.collapsibleHeader}
+              onClick={() => toggleTournament(tournament._id)}
+            >
               <FiCalendar className={styles.icon} />
 
               <span>{tournament.name}</span>
 
-              <FiChevronDown className={styles.chevron} />
+              <FiChevronDown
+                className={`${styles.chevron} ${
+                  openTournaments[tournament._id] ? styles.rotate : ""
+                }`}
+              />
             </div>
+
+            {/* TOURNAMENT OPTIONS */}
+            {openTournaments[tournament._id] && (
+              <ul className={styles.submenu}>
+                {/* UPDATE EVENTS */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/update-events`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiEdit className={styles.icon} />
+                    Update Events
+                  </NavLink>
+                </li>
+
+                {/* REGISTRATION FIELDS */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/registration-fields`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiClipboard className={styles.icon} />
+                    Manage Registration Fields
+                  </NavLink>
+                </li>
+
+                {/* PLAYER LIST */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/view-player-list`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiUsers className={styles.icon} />
+                    View Player List
+                  </NavLink>
+                </li>
+
+                {/* TEAM RANKING */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/update-team-ranking`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiBarChart2 className={styles.icon} />
+                    Update Team Ranking
+                  </NavLink>
+                </li>
+
+                {/* MANAGE DRAW */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/manage-draw`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiGitMerge className={styles.icon} />
+                    Manage Draw
+                  </NavLink>
+                </li>
+
+                {/* ORDER OF PLAY */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/order-of-play`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiCalendar className={styles.icon} />
+                    Order of Play
+                  </NavLink>
+                </li>
+
+                {/* MANAGE RESULT */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/manage-result`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiGrid className={styles.icon} />
+                    Manage Result
+                  </NavLink>
+                </li>
+
+                {/* PLAYER JOURNEY */}
+                <li>
+                  <NavLink
+                    to={`/tournament/${tournament._id}/view-player-journey`}
+                    onClick={toggleSidebar}
+                  >
+                    <FiUsers className={styles.icon} />
+                    View Player Journey
+                  </NavLink>
+                </li>
+              </ul>
+            )}
           </li>
         ))}
 
