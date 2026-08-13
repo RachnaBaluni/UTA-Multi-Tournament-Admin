@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import api from "../../../api";
 import {
   DndContext,
@@ -48,6 +49,7 @@ const SortableItem = ({ id, item }) => {
 };
 
 const UpdateTeamRanking = () => {
+  const { tournamentId } = useParams();
   const [allTeams, setAllTeams] = useState([]);
   const [filteredTeams, setFilteredTeams] = useState([]);
   const [events, setEvents] = useState([]);
@@ -65,7 +67,7 @@ const UpdateTeamRanking = () => {
     setLoading(true);
     try {
       const res = await api.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/team/all`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/team/all/${tournamentId}`,
         {
           withCredentials: true,
         },
@@ -90,8 +92,10 @@ const UpdateTeamRanking = () => {
   };
 
   useEffect(() => {
-    fetchAllTeams(true); // Fetch teams and reset selection on initial load
-  }, []);
+    if (tournamentId) {
+      fetchAllTeams(true);
+    }
+  }, [tournamentId]);
 
   useEffect(() => {
     const teamsForEvent = allTeams
