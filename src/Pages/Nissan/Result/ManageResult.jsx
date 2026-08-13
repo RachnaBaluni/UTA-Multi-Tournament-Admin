@@ -1,4 +1,5 @@
 import React, { useState, useEffect, memo, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import api from "../../../api";
 import styles from "./ManageResult.module.css"; // Will create this CSS file
 import { toast } from "sonner";
@@ -287,6 +288,7 @@ const Round = memo(
 );
 
 const ManageResult = () => {
+  const { tournamentId } = useParams();
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [draws, setDraws] = useState([]);
@@ -329,7 +331,11 @@ const ManageResult = () => {
         console.log("Events:", res.data.data);
 
         // Sort events alphabetically by name
-        const sortedEvents = [...res.data.data].sort((a, b) =>
+        const tournamentEvents = res.data.data.filter(
+          (event) => String(event.tournamentId) === String(tournamentId),
+        );
+
+        const sortedEvents = [...tournamentEvents].sort((a, b) =>
           a.name.localeCompare(b.name, undefined, {
             sensitivity: "base",
           }),
@@ -346,8 +352,10 @@ const ManageResult = () => {
       }
     };
 
-    fetchEvents();
-  }, []);
+    if (tournamentId) {
+      fetchEvents();
+    }
+  }, [tournamentId]);
 
   useEffect(() => {
     fetchDraws();
