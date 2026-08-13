@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import api from "../../../api";
 import styles from "./ManageDraw.module.css";
 import { toast } from "sonner";
@@ -176,6 +177,7 @@ const Round = ({
 };
 
 const ManageDraw = () => {
+  const { tournamentId } = useParams();
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [draws, setDraws] = useState([]);
@@ -274,7 +276,7 @@ const ManageDraw = () => {
     const fetchEvents = async () => {
       try {
         const res = await api.get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/events`,
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/events?tournamentId=${tournamentId}`,
           {
             withCredentials: true,
           },
@@ -299,7 +301,7 @@ const ManageDraw = () => {
     };
 
     fetchEvents();
-  }, []);
+  }, [tournamentId]);
 
   useEffect(() => {
     fetchDraws();
