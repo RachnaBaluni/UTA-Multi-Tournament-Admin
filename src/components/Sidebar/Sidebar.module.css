@@ -144,7 +144,7 @@
     display: block; /* Visible on mobile */
   }
 }
-.tournamentSection {
+/* .tournamentSection {
   margin-bottom: 15px;
 }
 
@@ -200,6 +200,39 @@
 }
 
 .tournamentName:hover {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+} */
+/* ================================
+   ALL TOURNAMENTS
+================================ */
+
+.allTournamentsLabel {
+  margin-top: 5px !important;
+  margin-bottom: 8px !important;
+  padding: 5px 15px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #777;
+}
+
+/* ================================
+   DYNAMIC TOURNAMENT ITEMS
+================================ */
+
+.tournamentItem {
+  margin-bottom: 8px !important;
+}
+
+.tournamentItem .collapsibleHeader {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tournamentItem .collapsibleHeader:hover {
   background-color: #e8f5e9;
   color: #2e7d32;
 }
