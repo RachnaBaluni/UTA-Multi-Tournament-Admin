@@ -36,7 +36,7 @@ const ViewPlayerList = () => {
   const fetchPlayers = async () => {
     try {
       const res = await api.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/player/details`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/player/details/${tournamentId}`,
         { withCredentials: true },
       );
       setPlayers(res.data.data);
