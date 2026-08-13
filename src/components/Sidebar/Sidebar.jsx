@@ -173,7 +173,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         ============================ */}
         {tournaments.map((tournament) => (
           <li className={styles.tournamentItem} key={tournament._id}>
-            {/* TOURNAMENT HEADER */}
             <div
               className={styles.collapsibleHeader}
               onClick={() => toggleTournament(tournament._id)}
@@ -189,10 +188,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               />
             </div>
 
-            {/* TOURNAMENT OPTIONS */}
             {openTournaments[tournament._id] && (
               <ul className={styles.submenu}>
-                {/* UPDATE EVENTS */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/update-events`}
@@ -203,7 +200,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   </NavLink>
                 </li>
 
-                {/* REGISTRATION FIELDS */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/registration-fields`}
@@ -214,7 +210,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   </NavLink>
                 </li>
 
-                {/* PLAYER LIST */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/view-player-list`}
@@ -225,7 +220,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   </NavLink>
                 </li>
 
-                {/* TEAM RANKING */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/update-team-ranking`}
@@ -236,7 +230,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   </NavLink>
                 </li>
 
-                {/* MANAGE DRAW */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/manage-draw`}
@@ -247,7 +240,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   </NavLink>
                 </li>
 
-                {/* ORDER OF PLAY */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/order-of-play`}
@@ -258,7 +250,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   </NavLink>
                 </li>
 
-                {/* MANAGE RESULT */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/manage-result`}
@@ -269,7 +260,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   </NavLink>
                 </li>
 
-                {/* PLAYER JOURNEY */}
                 <li>
                   <NavLink
                     to={`/tournament/${tournament._id}/view-player-journey`}
