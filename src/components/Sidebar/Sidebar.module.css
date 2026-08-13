@@ -214,7 +214,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.8px;
-  color: #777;
+  color: #0e0202;
 }
 
 /* ================================
@@ -229,7 +229,7 @@
   width: 100%;
   box-sizing: border-box;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .tournamentItem .collapsibleHeader:hover {
