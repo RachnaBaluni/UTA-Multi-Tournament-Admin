@@ -109,84 +109,13 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/nissan/update-team-ranking"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <UpdateTeamRanking />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/nissan/registration-fields"
           element={
             <ProtectedRoute>
               <Layout>
                 <RegistrationFields />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/nissan/view-player-list"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <ViewPlayerList />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/nissan/view-player-journey"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <ViewPlayerJourney />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/nissan/manage-draw"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <ManageDraw />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/nissan/order-of-play"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <OrderOfPlay />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/nissan/manage-result"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <ManageResult />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/nissan/update-events"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <UpdateEvents />
               </Layout>
             </ProtectedRoute>
           }
