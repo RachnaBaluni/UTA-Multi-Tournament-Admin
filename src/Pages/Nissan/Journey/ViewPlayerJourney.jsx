@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import api from "../../../api";
 import styles from "./ViewPlayerList.module.css";
 
 const ViewPlayerList = () => {
+  const { tournamentId } = useParams();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,10 +17,9 @@ const ViewPlayerList = () => {
     try {
       setLoading(true);
       const res = await api.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/player/journey/${playerId}`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/player/details/${tournamentId}`,
         { withCredentials: true },
       );
-
       console.log(JSON.stringify(res.data.data[0], null, 2));
       setModalData(res.data.data);
       setSelectedPlayer(playerName);
@@ -48,7 +49,7 @@ const ViewPlayerList = () => {
 
   useEffect(() => {
     fetchPlayers();
-  }, []);
+  }, [tournamentId]);
 
   const filteredPlayers = players.filter((player) =>
     player.name?.toLowerCase().includes(searchQuery.toLowerCase()),

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import styles from "./OrderOfPlay.module.css";
 import { toast } from "sonner";
@@ -213,6 +213,7 @@ function DroppableSlot({ children, id }) {
 /* ================= MAIN ================= */
 
 export default function OrderOfPlay() {
+  const { tournamentId } = useParams();
   const allMatchesRef = useRef([]);
   const todayDate = new Date().toISOString().split("T")[0];
 
@@ -309,8 +310,10 @@ export default function OrderOfPlay() {
   /* ================= FETCH EVENTS ================= */
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    if (tournamentId) {
+      fetchEvents();
+    }
+  }, [tournamentId]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -344,6 +347,9 @@ export default function OrderOfPlay() {
         { withCredentials: true },
       );
       const allEvents = res.data.data;
+      const tournamentEvents = allEvents.filter(
+        (event) => String(event.tournamentId) === String(tournamentId),
+      );
 
       const categoryOrder = {
         "Cat.A": 1,
@@ -352,7 +358,7 @@ export default function OrderOfPlay() {
         "Cat.D": 4,
       };
 
-      const sortedEvents = [...allEvents].sort((a, b) => {
+      const sortedEvents = [...tournamentEvents].sort((a, b) => {
         const aKey = Object.keys(categoryOrder).find((k) =>
           a.name.startsWith(k),
         );
