@@ -191,6 +191,95 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/tournament/:tournamentId/update-events"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <UpdateEvents />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tournament/:tournamentId/registration-fields"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <RegistrationFields />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tournament/:tournamentId/view-player-list"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ViewPlayerList />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tournament/:tournamentId/update-team-ranking"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <UpdateTeamRanking />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tournament/:tournamentId/manage-draw"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ManageDraw />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tournament/:tournamentId/order-of-play"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <OrderOfPlay />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tournament/:tournamentId/manage-result"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ManageResult />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tournament/:tournamentId/view-player-journey"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ViewPlayerJourney />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/approvals"
           element={

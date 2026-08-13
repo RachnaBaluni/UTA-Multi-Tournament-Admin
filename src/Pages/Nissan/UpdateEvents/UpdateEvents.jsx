@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import api from "../../../api";
 import styles from "./UpdateEvents.module.css";
 import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 
 const UpdateEvents = () => {
+  const { tournamentId } = useParams();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,7 +15,7 @@ const UpdateEvents = () => {
     setLoading(true);
     try {
       const res = await api.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/events`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/events?tournamentId=${tournamentId}`,
         {
           withCredentials: true,
         },
@@ -38,8 +40,10 @@ const UpdateEvents = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    if (tournamentId) {
+      fetchEvents();
+    }
+  }, [tournamentId]);
 
   const handleCreate = () => {
     setSelectedEvent(null);
@@ -121,13 +125,17 @@ const UpdateEvents = () => {
         </div>
       )}
       {isModalOpen && (
-        <EventModal event={selectedEvent} onClose={handleModalClose} />
+        <EventModal
+          event={selectedEvent}
+          tournamentId={tournamentId}
+          onClose={handleModalClose}
+        />
       )}
     </div>
   );
 };
 
-const EventModal = ({ event, onClose }) => {
+const EventModal = ({ event, tournamentId, onClose }) => {
   const [formData, setFormData] = useState({
     name: event ? event.name : "",
     date: event ? new Date(event.date).toISOString().split("T")[0] : "",
@@ -147,6 +155,7 @@ const EventModal = ({ event, onClose }) => {
     e.preventDefault();
     const dataToSubmit = {
       ...formData,
+      tournamentId,
       rules: formData.rules
         .split(",")
         .map((r) => r.trim())
