@@ -42,6 +42,8 @@ const EditTournament = () => {
           name: editingTournament.name,
           startDate: editingTournament.startDate,
           endDate: editingTournament.endDate,
+          director: editingTournament.director,
+          directorPhone: editingTournament.directorPhone,
           status: editingTournament.status,
         },
         {
@@ -113,6 +115,39 @@ const EditTournament = () => {
                 }
               />
             </div>
+
+            <div className={styles.formGroup}>
+              <label>Tournament Director</label>
+
+              <input
+                type="text"
+                value={editingTournament.director || ""}
+                onChange={(e) =>
+                  setEditingTournament({
+                    ...editingTournament,
+                    director: e.target.value,
+                  })
+                }
+                placeholder="Enter tournament director name"
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Director Phone Number</label>
+
+              <input
+                type="tel"
+                value={editingTournament.directorPhone || ""}
+                onChange={(e) =>
+                  setEditingTournament({
+                    ...editingTournament,
+                    directorPhone: e.target.value,
+                  })
+                }
+                placeholder="Enter director phone number"
+                maxLength="10"
+              />
+            </div>
           </div>
 
           <div className={styles.formGroup}>
@@ -171,6 +206,14 @@ const EditTournament = () => {
                 <p>
                   <strong>End:</strong>{" "}
                   {new Date(tournament.endDate).toLocaleDateString()}
+                </p>
+
+                <p>
+                  <strong>Director:</strong> {tournament.director}
+                </p>
+
+                <p>
+                  <strong>Director Phone:</strong> {tournament.directorPhone}
                 </p>
 
                 <p>
