@@ -105,6 +105,34 @@ const CreateTournament = () => {
         </div>
 
         <div className={styles.formGroup}>
+          <label>Tournament Director</label>
+
+          <input
+            type="text"
+            name="director"
+            value={formData.director}
+            onChange={handleChange}
+            placeholder="Enter tournament director name"
+            required
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Director Phone Number</label>
+
+          <input
+            type="tel"
+            name="directorPhone"
+            value={formData.directorPhone}
+            onChange={handleChange}
+            placeholder="Enter director phone number"
+            pattern="[0-9]{10}"
+            maxLength="10"
+            required
+          />
+        </div>
+
+        <div className={styles.formGroup}>
           <label>Status</label>
 
           <select name="status" value={formData.status} onChange={handleChange}>
