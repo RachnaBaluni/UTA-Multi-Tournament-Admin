@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import api from "../../../api";
 import styles from "./RegistrationFields.module.css";
 
 const RegistrationFields = () => {
+  const { tournamentId } = useParams();
+
   const [fields, setFields] = useState({
     shirtSize: true,
     foodPreference: true,
@@ -10,6 +13,36 @@ const RegistrationFields = () => {
     feePaid: true,
     transactionDetails: true,
   });
+  useEffect(() => {
+    const fetchTournamentFields = async () => {
+      try {
+        const res = await api.get(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+          {
+            withCredentials: true,
+          },
+        );
+
+        const tournament = res.data.data;
+
+        setFields({
+          shirtSize: tournament.registrationFields?.shirtSize ?? false,
+          foodPreference:
+            tournament.registrationFields?.foodPreference ?? false,
+          accommodation: tournament.registrationFields?.accommodation ?? false,
+          feePaid: tournament.registrationFields?.feePaid ?? false,
+          transactionDetails:
+            tournament.registrationFields?.transactionDetails ?? false,
+        });
+      } catch (error) {
+        console.error("Error fetching tournament fields:", error);
+      }
+    };
+
+    if (tournamentId) {
+      fetchTournamentFields();
+    }
+  }, [tournamentId]);
   const handleChange = (key) => {
     setFields((prev) => ({
       ...prev,
@@ -19,13 +52,14 @@ const RegistrationFields = () => {
   const handleSave = async () => {
     try {
       const res = await api.put(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/registration-fields`,
-        fields,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          registrationFields: fields,
+        },
         {
           withCredentials: true,
         },
       );
-
       console.log(res.data);
       alert("Registration fields updated successfully");
     } catch (error) {
