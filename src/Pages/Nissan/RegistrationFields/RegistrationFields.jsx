@@ -24,15 +24,13 @@ const RegistrationFields = () => {
         );
 
         const tournament = res.data.data;
-
         setFields({
-          shirtSize: tournament.registrationFields?.shirtSize ?? false,
-          foodPreference:
-            tournament.registrationFields?.foodPreference ?? false,
-          accommodation: tournament.registrationFields?.accommodation ?? false,
-          feePaid: tournament.registrationFields?.feePaid ?? false,
+          shirtSize: tournament.registrationFields?.shirtSize ?? true,
+          foodPreference: tournament.registrationFields?.foodPreference ?? true,
+          accommodation: tournament.registrationFields?.accommodation ?? true,
+          feePaid: tournament.registrationFields?.feePaid ?? true,
           transactionDetails:
-            tournament.registrationFields?.transactionDetails ?? false,
+            tournament.registrationFields?.transactionDetails ?? true,
         });
       } catch (error) {
         console.error("Error fetching tournament fields:", error);
