@@ -11,6 +11,7 @@ import {
   FiCheckCircle,
   FiX,
   FiChevronDown,
+  FichevronRight,
   FiBarChart2,
   FiGitMerge,
   FiClipboard,
@@ -23,6 +24,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [tournaments, setTournaments] = useState([]);
   const [mainEvents, setMainEvents] = useState([]);
   const [openTournaments, setOpenTournaments] = useState({});
+  const [expandedMainEvent, setExpandedMainEvent] = useState(null);
 
   const location = useLocation();
 
@@ -270,20 +272,61 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         {/* ============================
     MAIN EVENTS - DISPLAY ONLY
 ============================ */}
+        {/* ============================
+    MAIN EVENTS
+============================ */}
         {mainEvents
           .filter((event) => event.showing !== false)
-          .map((event) => (
-            <li
-              className={styles.tournamentItem}
-              key={`main-event-${event._id}`}
-            >
-              <div className={styles.collapsibleHeader}>
-                <FiCalendar className={styles.icon} />
+          .map((event) => {
+            const isOpen = expandedMainEvent === event._id;
 
-                <span>{event.name}</span>
-              </div>
-            </li>
-          ))}
+            return (
+              <li
+                className={styles.tournamentItem}
+                key={`main-event-${event._id}`}
+              >
+                <div
+                  className={styles.collapsibleHeader}
+                  onClick={() =>
+                    setExpandedMainEvent(isOpen ? null : event._id)
+                  }
+                >
+                  <FiCalendar className={styles.icon} />
+
+                  <span>{event.name}</span>
+
+                  <span className={styles.arrow}>{isOpen ? "⌄" : "›"}</span>
+                </div>
+
+                {isOpen && (
+                  <div className={styles.submenu}>
+                    <div className={styles.subMenuItem}>
+                      <strong>Description:</strong> {event.description || "N/A"}
+                    </div>
+
+                    <div className={styles.subMenuItem}>
+                      <strong>Date:</strong>{" "}
+                      {event.date
+                        ? new Date(event.date).toLocaleDateString()
+                        : "N/A"}
+                    </div>
+
+                    <div className={styles.subMenuItem}>
+                      <strong>Location:</strong> {event.location || "N/A"}
+                    </div>
+
+                    <div className={styles.subMenuItem}>
+                      <strong>Organizer:</strong> {event.organizer || "N/A"}
+                    </div>
+
+                    <div className={styles.subMenuItem}>
+                      <strong>Rules:</strong> {event.rules || "N/A"}
+                    </div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
 
         {/* ============================
             ONGOING TOURNAMENT
