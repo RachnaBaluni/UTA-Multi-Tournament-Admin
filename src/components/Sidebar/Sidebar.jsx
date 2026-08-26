@@ -21,7 +21,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const [tournaments, setTournaments] = useState([]);
-  const [mainEvents, setMainEvents] = useState([]);
   const [openTournaments, setOpenTournaments] = useState({});
 
   const location = useLocation();
@@ -30,35 +29,23 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   // FETCH TOURNAMENTS
   // ============================
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTournaments = async () => {
       try {
-        // Normal tournaments
-        const tournamentResponse = await fetch(
+        const response = await fetch(
           `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments`,
         );
 
-        const tournamentData = await tournamentResponse.json();
+        const data = await response.json();
 
-        if (tournamentData.success) {
-          setTournaments(tournamentData.data);
-        }
-
-        // Main Events
-        const mainEventResponse = await fetch(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/main-events`,
-        );
-
-        const mainEventData = await mainEventResponse.json();
-
-        if (mainEventData.success) {
-          setMainEvents(mainEventData.data);
+        if (data.success) {
+          setTournaments(data.data);
         }
       } catch (error) {
-        console.error("Error fetching sidebar data:", error);
+        console.error("Error fetching tournaments:", error);
       }
     };
 
-    fetchData();
+    fetchTournaments();
   }, []);
 
   // ============================
@@ -180,22 +167,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             ALL TOURNAMENTS LABEL
         ============================ */}
         <li className={styles.allTournamentsLabel}>ALL TOURNAMENTS</li>
-
-        {/* ============================
-    MAIN EVENTS - DISPLAY ONLY
-============================ */}
-        {mainEvents.map((event) => (
-          <li className={styles.tournamentItem} key={`main-event-${event._id}`}>
-            <NavLink
-              to={`/events/${event._id}`}
-              className={({ isActive }) => (isActive ? styles.active : "")}
-              onClick={toggleSidebar}
-            >
-              <FiCalendar className={styles.icon} />
-              <span>{event.name}</span>
-            </NavLink>
-          </li>
-        ))}
 
         {/* ============================
             DYNAMIC TOURNAMENTS

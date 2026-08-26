@@ -100,6 +100,16 @@ function App() {
           }
         />
         <Route
+          path="/events/:id"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Events />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/nissan"
           element={
             <ProtectedRoute>
