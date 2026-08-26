@@ -3,8 +3,10 @@ import api from "../../api";
 import styles from "./Events.module.css";
 import EventForm from "../../components/EventForm/EventForm";
 import { FiEdit, FiPlus, FiTrash2 } from "react-icons/fi";
+import { useParams } from "react-router-dom";
 
 const Events = () => {
+  const { id } = useParams();
   const [mainEvents, setMainEvents] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -86,34 +88,36 @@ const Events = () => {
           </tr>
         </thead>
         <tbody>
-          {mainEvents.map((event) => (
-            <tr key={event._id}>
-              <td data-label="Name">{event.name}</td>
-              <td data-label="Description">{event.description}</td>
-              <td data-label="Date">
-                {new Date(event.date).toLocaleDateString()}
-              </td>
-              <td data-label="Location">{event.location}</td>
-              <td data-label="Organizer">{event.organizer}</td>
-              <td data-label="Actions">
-                <button
-                  className={styles.editButton}
-                  onClick={() => {
-                    setSelectedEvent(event);
-                    setShowForm(true);
-                  }}
-                >
-                  <FiEdit />
-                </button>
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => handleDelete(event._id)}
-                >
-                  <FiTrash2 />
-                </button>
-              </td>
-            </tr>
-          ))}
+          {mainEvents
+            .filter((event) => !id || event._id === id)
+            .map((event) => (
+              <tr key={event._id}>
+                <td data-label="Name">{event.name}</td>
+                <td data-label="Description">{event.description}</td>
+                <td data-label="Date">
+                  {new Date(event.date).toLocaleDateString()}
+                </td>
+                <td data-label="Location">{event.location}</td>
+                <td data-label="Organizer">{event.organizer}</td>
+                <td data-label="Actions">
+                  <button
+                    className={styles.editButton}
+                    onClick={() => {
+                      setSelectedEvent(event);
+                      setShowForm(true);
+                    }}
+                  >
+                    <FiEdit />
+                  </button>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => handleDelete(event._id)}
+                  >
+                    <FiTrash2 />
+                  </button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
