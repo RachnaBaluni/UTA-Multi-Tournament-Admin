@@ -309,8 +309,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             {events.map((event) => (
               <li className={styles.tournamentItem} key={event._id}>
                 <NavLink
-                  to="/events"
-                  state={{ selectedEvent: event }}
+                  to={`/events/${event._id}`}
                   className={({ isActive }) => (isActive ? styles.active : "")}
                   onClick={toggleSidebar}
                 >
