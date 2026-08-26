@@ -129,7 +129,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         {/* ============================
             MAIN EVENTS
         ============================ */}
-        <li>
+        {/* <li>
           <NavLink
             to="/events"
             className={({ isActive }) => (isActive ? styles.active : "")}
@@ -138,7 +138,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <FiCalendar className={styles.icon} />
             Main Events
           </NavLink>
-        </li>
+        </li> */}
 
         {/* ============================
             TOURNAMENTS
