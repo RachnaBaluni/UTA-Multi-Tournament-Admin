@@ -5,9 +5,14 @@ import styles from "./CreateTournament.module.css";
 const CreateTournament = () => {
   const [formData, setFormData] = useState({
     name: "",
+    description: "",
+    date: "",
+    location: "",
+    organizer: "",
     startDate: "",
     endDate: "",
-    status: "Upcoming",
+    director: "",
+    directorPhone: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -46,9 +51,14 @@ const CreateTournament = () => {
 
         setFormData({
           name: "",
+          description: "",
+          date: "",
+          location: "",
+          organizer: "",
           startDate: "",
           endDate: "",
-          status: "Upcoming",
+          director: "",
+          directorPhone: "",
         });
       }
     } catch (error) {
@@ -65,6 +75,7 @@ const CreateTournament = () => {
       <h1 className={styles.title}>Create Tournament</h1>
 
       <form className={styles.form} onSubmit={handleSubmit}>
+        {/* TOURNAMENT NAME */}
         <div className={styles.formGroup}>
           <label>Tournament Name</label>
 
@@ -78,6 +89,62 @@ const CreateTournament = () => {
           />
         </div>
 
+        {/* DESCRIPTION */}
+        <div className={styles.formGroup}>
+          <label>Description</label>
+
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Enter tournament description"
+            rows="4"
+            required
+          />
+        </div>
+
+        {/* DATE */}
+        <div className={styles.formGroup}>
+          <label>Date</label>
+
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* LOCATION */}
+        <div className={styles.formGroup}>
+          <label>Location</label>
+
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="Enter tournament location"
+            required
+          />
+        </div>
+
+        {/* ORGANIZER */}
+        <div className={styles.formGroup}>
+          <label>Organizer</label>
+
+          <input
+            type="text"
+            name="organizer"
+            value={formData.organizer}
+            onChange={handleChange}
+            placeholder="Enter organizer name"
+            required
+          />
+        </div>
+
+        {/* START + END DATE */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label>Start Date</label>
@@ -104,6 +171,7 @@ const CreateTournament = () => {
           </div>
         </div>
 
+        {/* TOURNAMENT DIRECTOR */}
         <div className={styles.formGroup}>
           <label>Tournament Director</label>
 
@@ -117,6 +185,7 @@ const CreateTournament = () => {
           />
         </div>
 
+        {/* DIRECTOR PHONE */}
         <div className={styles.formGroup}>
           <label>Director Phone Number</label>
 
@@ -132,16 +201,7 @@ const CreateTournament = () => {
           />
         </div>
 
-        <div className={styles.formGroup}>
-          <label>Status</label>
-
-          <select name="status" value={formData.status} onChange={handleChange}>
-            <option value="Upcoming">Upcoming</option>
-            <option value="Active">Active</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-
+        {/* SUBMIT */}
         <button
           type="submit"
           className={styles.createButton}
