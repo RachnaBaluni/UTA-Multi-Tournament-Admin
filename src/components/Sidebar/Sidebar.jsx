@@ -108,20 +108,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </li>
 
         {/* ============================
-            MAIN EVENTS
-        ============================ */}
-        <li>
-          <NavLink
-            to="/events"
-            className={({ isActive }) => (isActive ? styles.active : "")}
-            onClick={toggleSidebar}
-          >
-            <FiCalendar className={styles.icon} />
-            Main Events
-          </NavLink>
-        </li>
-
-        {/* ============================
             TOURNAMENTS
         ============================ */}
         <li className={styles.collapsible}>
