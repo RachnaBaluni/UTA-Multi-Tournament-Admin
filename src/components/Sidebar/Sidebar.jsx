@@ -11,7 +11,6 @@ import {
   FiCheckCircle,
   FiX,
   FiChevronDown,
-  FichevronRight,
   FiBarChart2,
   FiGitMerge,
   FiClipboard,
@@ -22,9 +21,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const [tournaments, setTournaments] = useState([]);
-  const [mainEvents, setMainEvents] = useState([]);
   const [openTournaments, setOpenTournaments] = useState({});
-  const [expandedMainEvent, setExpandedMainEvent] = useState(null);
 
   const location = useLocation();
 
@@ -32,29 +29,23 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   // FETCH TOURNAMENTS
   // ============================
   useEffect(() => {
-    const fetchSidebarData = async () => {
+    const fetchTournaments = async () => {
       try {
-        const [tournamentResponse, mainEventResponse] = await Promise.all([
-          fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments`),
-          fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/main-events`),
-        ]);
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments`,
+        );
 
-        const tournamentData = await tournamentResponse.json();
-        const mainEventData = await mainEventResponse.json();
+        const data = await response.json();
 
-        if (tournamentData.success) {
-          setTournaments(tournamentData.data);
-        }
-
-        if (mainEventData.success) {
-          setMainEvents(mainEventData.data);
+        if (data.success) {
+          setTournaments(data.data);
         }
       } catch (error) {
-        console.error("Error fetching sidebar data:", error);
+        console.error("Error fetching tournaments:", error);
       }
     };
 
-    fetchSidebarData();
+    fetchTournaments();
   }, []);
 
   // ============================
@@ -107,6 +98,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           >
             <FiGrid className={styles.icon} />
             Dashboard
+          </NavLink>
+        </li>
+
+        {/* ============================
+            MAIN EVENTS
+        ============================ */}
+        <li>
+          <NavLink
+            to="/events"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+            onClick={toggleSidebar}
+          >
+            <FiCalendar className={styles.icon} />
+            Main Events
           </NavLink>
         </li>
 
@@ -268,65 +273,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             )}
           </li>
         ))}
-
-        {/* ============================
-    MAIN EVENTS - DISPLAY ONLY
-============================ */}
-        {/* ============================
-    MAIN EVENTS
-============================ */}
-        {mainEvents
-          .filter((event) => event.showing !== false)
-          .map((event) => {
-            const isOpen = expandedMainEvent === event._id;
-
-            return (
-              <li
-                className={styles.tournamentItem}
-                key={`main-event-${event._id}`}
-              >
-                <div
-                  className={styles.collapsibleHeader}
-                  onClick={() =>
-                    setExpandedMainEvent(isOpen ? null : event._id)
-                  }
-                >
-                  <FiCalendar className={styles.icon} />
-
-                  <span>{event.name}</span>
-
-                  <span className={styles.arrow}>{isOpen ? "⌄" : "›"}</span>
-                </div>
-
-                {isOpen && (
-                  <div className={styles.submenu}>
-                    <div className={styles.subMenuItem}>
-                      <strong>Description:</strong> {event.description || "N/A"}
-                    </div>
-
-                    <div className={styles.subMenuItem}>
-                      <strong>Date:</strong>{" "}
-                      {event.date
-                        ? new Date(event.date).toLocaleDateString()
-                        : "N/A"}
-                    </div>
-
-                    <div className={styles.subMenuItem}>
-                      <strong>Location:</strong> {event.location || "N/A"}
-                    </div>
-
-                    <div className={styles.subMenuItem}>
-                      <strong>Organizer:</strong> {event.organizer || "N/A"}
-                    </div>
-
-                    <div className={styles.subMenuItem}>
-                      <strong>Rules:</strong> {event.rules || "N/A"}
-                    </div>
-                  </div>
-                )}
-              </li>
-            );
-          })}
 
         {/* ============================
             ONGOING TOURNAMENT
