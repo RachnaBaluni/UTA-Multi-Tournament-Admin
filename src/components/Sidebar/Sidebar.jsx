@@ -21,6 +21,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const [tournaments, setTournaments] = useState([]);
+  const [mainEvents, setMainEvents] = useState([]);
   const [openTournaments, setOpenTournaments] = useState({});
 
   const location = useLocation();
@@ -29,23 +30,29 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   // FETCH TOURNAMENTS
   // ============================
   useEffect(() => {
-    const fetchTournaments = async () => {
+    const fetchSidebarData = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments`,
-        );
+        const [tournamentResponse, mainEventResponse] = await Promise.all([
+          fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments`),
+          fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/main-events`),
+        ]);
 
-        const data = await response.json();
+        const tournamentData = await tournamentResponse.json();
+        const mainEventData = await mainEventResponse.json();
 
-        if (data.success) {
-          setTournaments(data.data);
+        if (tournamentData.success) {
+          setTournaments(tournamentData.data);
+        }
+
+        if (mainEventData.success) {
+          setMainEvents(mainEventData.data);
         }
       } catch (error) {
-        console.error("Error fetching tournaments:", error);
+        console.error("Error fetching sidebar data:", error);
       }
     };
 
-    fetchTournaments();
+    fetchSidebarData();
   }, []);
 
   // ============================
@@ -98,20 +105,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           >
             <FiGrid className={styles.icon} />
             Dashboard
-          </NavLink>
-        </li>
-
-        {/* ============================
-            MAIN EVENTS
-        ============================ */}
-        <li>
-          <NavLink
-            to="/events"
-            className={({ isActive }) => (isActive ? styles.active : "")}
-            onClick={toggleSidebar}
-          >
-            <FiCalendar className={styles.icon} />
-            Main Events
           </NavLink>
         </li>
 
@@ -273,6 +266,24 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             )}
           </li>
         ))}
+
+        {/* ============================
+    MAIN EVENTS - DISPLAY ONLY
+============================ */}
+        {mainEvents
+          .filter((event) => event.showing !== false)
+          .map((event) => (
+            <li
+              className={styles.tournamentItem}
+              key={`main-event-${event._id}`}
+            >
+              <div className={styles.collapsibleHeader}>
+                <FiCalendar className={styles.icon} />
+
+                <span>{event.name}</span>
+              </div>
+            </li>
+          ))}
 
         {/* ============================
             ONGOING TOURNAMENT
