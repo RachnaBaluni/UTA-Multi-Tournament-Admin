@@ -15,6 +15,7 @@ import {
   FiGitMerge,
   FiClipboard,
   FiEdit,
+  FiInfo,
 } from "react-icons/fi";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -22,6 +23,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const [tournaments, setTournaments] = useState([]);
   const [openTournaments, setOpenTournaments] = useState({});
+  const [events, setEvents] = useState([]);
 
   const location = useLocation();
 
@@ -46,6 +48,29 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     };
 
     fetchTournaments();
+  }, []);
+
+  // ============================
+  // FETCH DISPLAY TOURNAMENTS / EVENTS
+  // ============================
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/main-events`,
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          setEvents(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching display tournaments:", error);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
   // ============================
@@ -273,6 +298,30 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             )}
           </li>
         ))}
+
+        {/* ============================
+            DISPLAY TOURNAMENTS
+        ============================ */}
+        {events.length > 0 && (
+          <>
+            <li className={styles.allTournamentsLabel}>DISPLAY TOURNAMENTS</li>
+
+            {events.map((event) => (
+              <li className={styles.tournamentItem} key={event._id}>
+                <NavLink
+                  to="/events"
+                  state={{ selectedEvent: event }}
+                  className={({ isActive }) => (isActive ? styles.active : "")}
+                  onClick={toggleSidebar}
+                >
+                  <FiInfo className={styles.icon} />
+
+                  <span>{event.name}</span>
+                </NavLink>
+              </li>
+            ))}
+          </>
+        )}
 
         {/* ============================
             ONGOING TOURNAMENT

@@ -59,15 +59,17 @@ const Events = () => {
   return (
     <div className={styles.events}>
       <h1>Events</h1>
-      <button
-        className={styles.addButton}
-        onClick={() => {
-          setSelectedEvent(null);
-          setShowForm(true);
-        }}
-      >
-        <FiPlus /> Add Event
-      </button>
+      {!id && (
+        <button
+          className={styles.addButton}
+          onClick={() => {
+            setSelectedEvent(null);
+            setShowForm(true);
+          }}
+        >
+          <FiPlus /> Add Event
+        </button>
+      )}
       {showForm && (
         <EventForm
           event={selectedEvent}
