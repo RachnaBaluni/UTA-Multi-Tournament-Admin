@@ -154,7 +154,23 @@
 .editButton:hover {
   background-color: #1b5e20;
 }
+/* Delete button */
 
+.deleteButton {
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s;
+  margin-left: 8px;
+}
+
+.deleteButton:hover {
+  background-color: #b91c1c;
+}
 /* =========================
    Messages
 ========================= */
