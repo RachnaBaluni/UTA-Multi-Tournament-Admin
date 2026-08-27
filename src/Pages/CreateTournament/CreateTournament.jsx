@@ -13,6 +13,7 @@ const CreateTournament = () => {
     endDate: "",
     director: "",
     directorPhone: "",
+    type: "normal",
   });
 
   const [loading, setLoading] = useState(false);
@@ -142,6 +143,16 @@ const CreateTournament = () => {
             placeholder="Enter organizer name"
             required
           />
+        </div>
+
+        {/* TOURNAMENT TYPE */}
+        <div className={styles.formGroup}>
+          <label>Tournament Type</label>
+
+          <select name="type" value={formData.type} onChange={handleChange}>
+            <option value="normal">Normal Tournament</option>
+            <option value="display">Display Tournament</option>
+          </select>
         </div>
 
         {/* START + END DATE */}
