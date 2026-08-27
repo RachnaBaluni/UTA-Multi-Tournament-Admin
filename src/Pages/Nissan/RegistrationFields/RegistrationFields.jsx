@@ -13,6 +13,8 @@ const RegistrationFields = () => {
     feePaid: true,
     transactionDetails: true,
   });
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   useEffect(() => {
     const fetchTournamentFields = async () => {
       try {
@@ -49,6 +51,9 @@ const RegistrationFields = () => {
   };
   const handleSave = async () => {
     try {
+      setMessage("");
+      setError("");
+
       const res = await api.put(
         `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
         {
@@ -58,17 +63,28 @@ const RegistrationFields = () => {
           withCredentials: true,
         },
       );
+
       console.log(res.data);
-      alert("Registration fields updated successfully");
+
+      setMessage("Registration fields updated successfully.");
+
+      //  message automatically hide after 3 seconds
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
     } catch (error) {
       console.log(error);
-      alert("Error updating registration fields");
+
+      setError("Error updating registration fields.");
+
+      setTimeout(() => {
+        setError("");
+      }, 3000);
     }
   };
   return (
     <div className={styles.container}>
       <h1>Manage Registration Fields</h1>
-
       <div className={styles.fields}>
         {[
           ["shirtSize", "Shirt Size"],
@@ -87,8 +103,9 @@ const RegistrationFields = () => {
           </label>
         ))}
       </div>
-
-      <button onClick={handleSave}>Save</button>
+      {message && <p className={styles.success}>{message}</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      <button onClick={handleSave}>Save</button>{" "}
     </div>
   );
 };
