@@ -21,7 +21,7 @@ const CreateTournament = () => {
   const [error, setError] = useState("");
 
   const BACKEND = import.meta.env.VITE_APP_BACKEND_URL;
-
+  const isDisplayTournament = formData.type === "display";
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -60,6 +60,7 @@ const CreateTournament = () => {
           endDate: "",
           director: "",
           directorPhone: "",
+          type: "normal",
         });
       }
     } catch (error) {
@@ -156,61 +157,68 @@ const CreateTournament = () => {
         </div>
 
         {/* START + END DATE */}
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label>Start Date</label>
+        {/* START + END DATE */}
+        {formData.type === "normal" && (
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Start Date</label>
 
-            <input
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-              required
-            />
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>End Date</label>
+
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
-
-          <div className={styles.formGroup}>
-            <label>End Date</label>
-
-            <input
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
+        )}
 
         {/* TOURNAMENT DIRECTOR */}
-        <div className={styles.formGroup}>
-          <label>Tournament Director</label>
+        {!isDisplayTournament && (
+          <div className={styles.formGroup}>
+            <label>Tournament Director</label>
 
-          <input
-            type="text"
-            name="director"
-            value={formData.director}
-            onChange={handleChange}
-            placeholder="Enter tournament director name"
-            required
-          />
-        </div>
+            <input
+              type="text"
+              name="director"
+              value={formData.director}
+              onChange={handleChange}
+              placeholder="Enter tournament director name"
+              required
+            />
+          </div>
+        )}
 
         {/* DIRECTOR PHONE */}
-        <div className={styles.formGroup}>
-          <label>Director Phone Number</label>
+        {!isDisplayTournament && (
+          <div className={styles.formGroup}>
+            <label>Director Phone Number</label>
 
-          <input
-            type="tel"
-            name="directorPhone"
-            value={formData.directorPhone}
-            onChange={handleChange}
-            placeholder="Enter director phone number"
-            pattern="[0-9]{10}"
-            maxLength="10"
-            required
-          />
-        </div>
+            <input
+              type="tel"
+              name="directorPhone"
+              value={formData.directorPhone}
+              onChange={handleChange}
+              placeholder="Enter director phone number"
+              pattern="[0-9]{10}"
+              maxLength="10"
+              required
+            />
+          </div>
+        )}
 
         {/* SUBMIT */}
         <button
