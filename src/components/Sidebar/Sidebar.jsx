@@ -23,7 +23,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const [tournaments, setTournaments] = useState([]);
   const [openTournaments, setOpenTournaments] = useState({});
-  const [events, setEvents] = useState([]);
 
   const location = useLocation();
 
@@ -48,29 +47,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     };
 
     fetchTournaments();
-  }, []);
-
-  // ============================
-  // FETCH DISPLAY TOURNAMENTS / EVENTS
-  // ============================
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/main-events`,
-        );
-
-        const data = await response.json();
-
-        if (data.success) {
-          setEvents(data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching display tournaments:", error);
-      }
-    };
-
-    fetchEvents();
   }, []);
 
   // ============================
@@ -196,129 +172,136 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         {/* ============================
             DYNAMIC TOURNAMENTS
         ============================ */}
-        {tournaments.map((tournament) => (
-          <li className={styles.tournamentItem} key={tournament._id}>
-            <div
-              className={styles.collapsibleHeader}
-              onClick={() => toggleTournament(tournament._id)}
-            >
-              <FiCalendar className={styles.icon} />
+        {tournaments
+          .filter((tournament) => tournament.type === "normal")
+          .map((tournament) => (
+            <li className={styles.tournamentItem} key={tournament._id}>
+              <div
+                className={styles.collapsibleHeader}
+                onClick={() => toggleTournament(tournament._id)}
+              >
+                <FiCalendar className={styles.icon} />
 
-              <span>{tournament.name}</span>
+                <span>{tournament.name}</span>
 
-              <FiChevronDown
-                className={`${styles.chevron} ${
-                  openTournaments[tournament._id] ? styles.rotate : ""
-                }`}
-              />
-            </div>
+                <FiChevronDown
+                  className={`${styles.chevron} ${
+                    openTournaments[tournament._id] ? styles.rotate : ""
+                  }`}
+                />
+              </div>
 
-            {openTournaments[tournament._id] && (
-              <ul className={styles.submenu}>
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/update-events`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiEdit className={styles.icon} />
-                    Update Events
-                  </NavLink>
-                </li>
+              {openTournaments[tournament._id] && (
+                <ul className={styles.submenu}>
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/update-events`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiEdit className={styles.icon} />
+                      Update Events
+                    </NavLink>
+                  </li>
 
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/registration-fields`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiClipboard className={styles.icon} />
-                    Manage Registration Fields
-                  </NavLink>
-                </li>
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/registration-fields`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiClipboard className={styles.icon} />
+                      Manage Registration Fields
+                    </NavLink>
+                  </li>
 
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/view-player-list`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiUsers className={styles.icon} />
-                    View Player List
-                  </NavLink>
-                </li>
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/view-player-list`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiUsers className={styles.icon} />
+                      View Player List
+                    </NavLink>
+                  </li>
 
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/update-team-ranking`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiBarChart2 className={styles.icon} />
-                    Update Team Ranking
-                  </NavLink>
-                </li>
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/update-team-ranking`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiBarChart2 className={styles.icon} />
+                      Update Team Ranking
+                    </NavLink>
+                  </li>
 
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/manage-draw`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiGitMerge className={styles.icon} />
-                    Manage Draw
-                  </NavLink>
-                </li>
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/manage-draw`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiGitMerge className={styles.icon} />
+                      Manage Draw
+                    </NavLink>
+                  </li>
 
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/order-of-play`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiCalendar className={styles.icon} />
-                    Order of Play
-                  </NavLink>
-                </li>
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/order-of-play`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiCalendar className={styles.icon} />
+                      Order of Play
+                    </NavLink>
+                  </li>
 
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/manage-result`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiGrid className={styles.icon} />
-                    Manage Result
-                  </NavLink>
-                </li>
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/manage-result`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiGrid className={styles.icon} />
+                      Manage Result
+                    </NavLink>
+                  </li>
 
-                <li>
-                  <NavLink
-                    to={`/tournament/${tournament._id}/view-player-journey`}
-                    onClick={toggleSidebar}
-                  >
-                    <FiUsers className={styles.icon} />
-                    View Player Journey
-                  </NavLink>
-                </li>
-              </ul>
-            )}
-          </li>
-        ))}
+                  <li>
+                    <NavLink
+                      to={`/tournament/${tournament._id}/view-player-journey`}
+                      onClick={toggleSidebar}
+                    >
+                      <FiUsers className={styles.icon} />
+                      View Player Journey
+                    </NavLink>
+                  </li>
+                </ul>
+              )}
+            </li>
+          ))}
 
         {/* ============================
             DISPLAY TOURNAMENTS
         ============================ */}
-        {events.length > 0 && (
+        {tournaments.filter((tournament) => tournament.type === "display")
+          .length > 0 && (
           <>
             <li className={styles.allTournamentsLabel}>DISPLAY TOURNAMENTS</li>
 
-            {events.map((event) => (
-              <li className={styles.tournamentItem} key={event._id}>
-                <NavLink
-                  to={`/events/${event._id}`}
-                  className={({ isActive }) => (isActive ? styles.active : "")}
-                  onClick={toggleSidebar}
-                >
-                  <FiInfo className={styles.icon} />
+            {tournaments
+              .filter((tournament) => tournament.type === "display")
+              .map((tournament) => (
+                <li className={styles.tournamentItem} key={tournament._id}>
+                  <NavLink
+                    to={`/events/${tournament._id}`}
+                    className={({ isActive }) =>
+                      isActive ? styles.active : ""
+                    }
+                    onClick={toggleSidebar}
+                  >
+                    <FiInfo className={styles.icon} />
 
-                  <span>{event.name}</span>
-                </NavLink>
-              </li>
-            ))}
+                    <span>{tournament.name}</span>
+                  </NavLink>
+                </li>
+              ))}
           </>
         )}
 
