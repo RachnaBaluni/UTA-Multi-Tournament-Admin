@@ -22,6 +22,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
   const [tournaments, setTournaments] = useState([]);
+  const [events, setEvents] = useState([]);
   const [openTournaments, setOpenTournaments] = useState({});
 
   const location = useLocation();
@@ -169,11 +170,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         ============================ */}
         <li className={styles.allTournamentsLabel}>ALL TOURNAMENTS</li>
 
-        {/* ============================
-            DYNAMIC TOURNAMENTS
-        ============================ */}
         {tournaments
-          .filter((tournament) => tournament.type === "normal")
+          .filter((tournament) => tournament.type !== "display")
           .map((tournament) => (
             <li className={styles.tournamentItem} key={tournament._id}>
               <div
@@ -276,19 +274,42 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               )}
             </li>
           ))}
-
         {/* ============================
             DISPLAY TOURNAMENTS
         ============================ */}
-        {tournaments.filter((tournament) => tournament.type === "display")
-          .length > 0 && (
+        {/* ============================
+    DISPLAY TOURNAMENTS
+============================ */}
+
+        {(events.length > 0 ||
+          tournaments.filter((tournament) => tournament.type === "display")
+            .length > 0) && (
           <>
             <li className={styles.allTournamentsLabel}>DISPLAY TOURNAMENTS</li>
 
+            {/* OLD DISPLAY EVENTS */}
+            {events.map((event) => (
+              <li className={styles.tournamentItem} key={`event-${event._id}`}>
+                <NavLink
+                  to={`/events/${event._id}`}
+                  className={({ isActive }) => (isActive ? styles.active : "")}
+                  onClick={toggleSidebar}
+                >
+                  <FiInfo className={styles.icon} />
+
+                  <span>{event.name}</span>
+                </NavLink>
+              </li>
+            ))}
+
+            {/* NEW DISPLAY TOURNAMENTS */}
             {tournaments
               .filter((tournament) => tournament.type === "display")
               .map((tournament) => (
-                <li className={styles.tournamentItem} key={tournament._id}>
+                <li
+                  className={styles.tournamentItem}
+                  key={`tournament-${tournament._id}`}
+                >
                   <NavLink
                     to={`/events/${tournament._id}`}
                     className={({ isActive }) =>
@@ -304,7 +325,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               ))}
           </>
         )}
-
         {/* ============================
             ONGOING TOURNAMENT
         ============================ */}
