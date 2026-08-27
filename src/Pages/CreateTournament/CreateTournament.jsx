@@ -118,7 +118,7 @@ const CreateTournament = () => {
 
             <select value={tournamentType} onChange={handleTypeChange}>
               <option value="">Select Tournament Type</option>
-              <option value="normal">Normal Tournament</option>
+              <option value="normal">Master Tournament</option>
               <option value="display">Display Tournament</option>
             </select>
           </div>
