@@ -88,3 +88,16 @@
     width: 100%;
   }
 }
+/* Success Message */
+
+.success {
+  color: #059669;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  max-width: 600px;
+}
