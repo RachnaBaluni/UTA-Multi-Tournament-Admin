@@ -312,9 +312,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             {tournaments
               .filter((tournament) => tournament.type === "display")
               .map((tournament) => (
-                <li className={styles.tournamentItem} key={event._id}>
+                <li className={styles.tournamentItem} key={tournament._id}>
                   <NavLink
-                    to={`/events/${event._id}`}
+                    to={`/events/${tournament._id}`}
                     className={({ isActive }) =>
                       isActive ? styles.active : ""
                     }
@@ -322,7 +322,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   >
                     <FiInfo className={styles.icon} />
 
-                    <span>{event.name}</span>
+                    <span>{tournament.name}</span>
                   </NavLink>
                 </li>
               ))}
