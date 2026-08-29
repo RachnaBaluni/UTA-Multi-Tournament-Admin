@@ -53,6 +53,10 @@ const EditTournament = () => {
           directorPhone: editingTournament.directorPhone,
           status: editingTournament.status,
           type: editingTournament.type,
+          entryParticipationRules:
+            editingTournament.entryParticipationRules || [],
+          registrationStartDate: editingTournament.registrationStartDate || "",
+          registrationEndDate: editingTournament.registrationEndDate || "",
         },
         {
           withCredentials: true,
@@ -146,6 +150,74 @@ const EditTournament = () => {
                 })
               }
               placeholder="Enter tournament name"
+            />
+          </div>
+          {/* =================================
+    REGISTRATION DATES
+================================= */}
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Registration Start Date</label>
+
+              <input
+                type="date"
+                value={
+                  editingTournament.registrationStartDate?.slice(0, 10) || ""
+                }
+                onChange={(e) =>
+                  setEditingTournament({
+                    ...editingTournament,
+                    registrationStartDate: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Registration End Date</label>
+
+              <input
+                type="date"
+                value={
+                  editingTournament.registrationEndDate?.slice(0, 10) || ""
+                }
+                onChange={(e) =>
+                  setEditingTournament({
+                    ...editingTournament,
+                    registrationEndDate: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          {/* =================================
+    ENTRY & PARTICIPATION RULES
+================================= */}
+          <div className={styles.formGroup}>
+            <label>Entry & Participation Rules</label>
+
+            <textarea
+              value={(editingTournament.entryParticipationRules || []).join(
+                "\n",
+              )}
+              onChange={(e) => {
+                const rules = e.target.value
+                  .split("\n")
+                  .map((rule) => rule.trim())
+                  .filter((rule) => rule !== "");
+
+                setEditingTournament({
+                  ...editingTournament,
+                  entryParticipationRules: rules,
+                });
+              }}
+              placeholder={`Enter one rule per line
+Example:
+Entry Fee: ₹1000
+Singles participation only
+Players must register before the deadline`}
+              rows="6"
             />
           </div>
 
