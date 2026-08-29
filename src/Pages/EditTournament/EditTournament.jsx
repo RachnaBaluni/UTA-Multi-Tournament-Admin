@@ -14,6 +14,9 @@ const EditTournament = () => {
     fetchTournaments();
   }, []);
 
+  // ============================
+  // FETCH TOURNAMENTS
+  // ============================
   const fetchTournaments = async () => {
     try {
       setLoading(true);
@@ -39,6 +42,26 @@ const EditTournament = () => {
     try {
       setError("");
 
+      // DATE VALIDATION
+      if (
+        editingTournament.registrationStartDate &&
+        editingTournament.registrationEndDate &&
+        editingTournament.registrationEndDate <
+          editingTournament.registrationStartDate
+      ) {
+        setError("Registration end date cannot be before start date.");
+        return;
+      }
+
+      if (
+        editingTournament.startDate &&
+        editingTournament.endDate &&
+        editingTournament.endDate < editingTournament.startDate
+      ) {
+        setError("Tournament end date cannot be before start date.");
+        return;
+      }
+
       const response = await axios.put(
         `${BACKEND}/api/tournaments/${editingTournament._id}`,
         {
@@ -47,16 +70,22 @@ const EditTournament = () => {
           date: editingTournament.date,
           location: editingTournament.location,
           organizer: editingTournament.organizer,
+
           startDate: editingTournament.startDate,
           endDate: editingTournament.endDate,
+
           director: editingTournament.director,
           directorPhone: editingTournament.directorPhone,
+
           status: editingTournament.status,
           type: editingTournament.type,
+
+          registrationStartDate: editingTournament.registrationStartDate || "",
+
+          registrationEndDate: editingTournament.registrationEndDate || "",
+
           entryParticipationRules:
             editingTournament.entryParticipationRules || [],
-          registrationStartDate: editingTournament.registrationStartDate || "",
-          registrationEndDate: editingTournament.registrationEndDate || "",
         },
         {
           withCredentials: true,
@@ -114,11 +143,15 @@ const EditTournament = () => {
       {/* =================================
           EDIT FORM
       ================================= */}
+
       {editingTournament && (
         <div className={styles.editForm}>
           <h2>Edit Tournament Details</h2>
 
-          {/* TOURNAMENT TYPE */}
+          {/* =================================
+              TOURNAMENT TYPE
+          ================================= */}
+
           <div className={styles.formGroup}>
             <label>Tournament Type</label>
 
@@ -131,12 +164,15 @@ const EditTournament = () => {
                 })
               }
             >
-              <option value="normal">Normal Tournament</option>
+              <option value="normal">Master Tournament</option>
               <option value="display">Display Tournament</option>
             </select>
           </div>
 
-          {/* TOURNAMENT NAME */}
+          {/* =================================
+              TOURNAMENT NAME
+          ================================= */}
+
           <div className={styles.formGroup}>
             <label>Tournament Name</label>
 
@@ -152,150 +188,100 @@ const EditTournament = () => {
               placeholder="Enter tournament name"
             />
           </div>
-          {/* =================================
-    REGISTRATION DATES
-================================= */}
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label>Registration Start Date</label>
-
-              <input
-                type="date"
-                value={
-                  editingTournament.registrationStartDate?.slice(0, 10) || ""
-                }
-                onChange={(e) =>
-                  setEditingTournament({
-                    ...editingTournament,
-                    registrationStartDate: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Registration End Date</label>
-
-              <input
-                type="date"
-                value={
-                  editingTournament.registrationEndDate?.slice(0, 10) || ""
-                }
-                onChange={(e) =>
-                  setEditingTournament({
-                    ...editingTournament,
-                    registrationEndDate: e.target.value,
-                  })
-                }
-              />
-            </div>
-          </div>
 
           {/* =================================
-    ENTRY & PARTICIPATION RULES
-================================= */}
+              DESCRIPTION
+              BOTH TYPES
+          ================================= */}
+
           <div className={styles.formGroup}>
-            <label>Entry & Participation Rules</label>
+            <label>Description</label>
 
             <textarea
-              value={(editingTournament.entryParticipationRules || []).join(
-                "\n",
-              )}
-              onChange={(e) => {
-                const rules = e.target.value
-                  .split("\n")
-                  .map((rule) => rule.trim())
-                  .filter((rule) => rule !== "");
-
+              value={editingTournament.description || ""}
+              onChange={(e) =>
                 setEditingTournament({
                   ...editingTournament,
-                  entryParticipationRules: rules,
-                });
-              }}
-              placeholder={`Enter one rule per line
-Example:
-Entry Fee: ₹1000
-Singles participation only
-Players must register before the deadline`}
-              rows="6"
+                  description: e.target.value,
+                })
+              }
+              placeholder="Enter tournament description"
+              rows="4"
             />
           </div>
 
           {/* =================================
-              DISPLAY TOURNAMENT FIELDS
+              DATE
+              BOTH TYPES
           ================================= */}
-          {editingTournament.type === "display" && (
-            <>
-              <div className={styles.formGroup}>
-                <label>Description</label>
 
-                <textarea
-                  value={editingTournament.description || ""}
-                  onChange={(e) =>
-                    setEditingTournament({
-                      ...editingTournament,
-                      description: e.target.value,
-                    })
-                  }
-                  placeholder="Enter tournament description"
-                  rows="4"
-                />
-              </div>
+          <div className={styles.formGroup}>
+            <label>Tournament Date</label>
 
-              <div className={styles.formGroup}>
-                <label>Date</label>
-
-                <input
-                  type="date"
-                  value={editingTournament.date?.slice(0, 10) || ""}
-                  onChange={(e) =>
-                    setEditingTournament({
-                      ...editingTournament,
-                      date: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Location</label>
-
-                <input
-                  type="text"
-                  value={editingTournament.location || ""}
-                  onChange={(e) =>
-                    setEditingTournament({
-                      ...editingTournament,
-                      location: e.target.value,
-                    })
-                  }
-                  placeholder="Enter tournament location"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Organizer</label>
-
-                <input
-                  type="text"
-                  value={editingTournament.organizer || ""}
-                  onChange={(e) =>
-                    setEditingTournament({
-                      ...editingTournament,
-                      organizer: e.target.value,
-                    })
-                  }
-                  placeholder="Enter organizer name"
-                />
-              </div>
-            </>
-          )}
+            <input
+              type="date"
+              value={editingTournament.date?.slice(0, 10) || ""}
+              onChange={(e) =>
+                setEditingTournament({
+                  ...editingTournament,
+                  date: e.target.value,
+                })
+              }
+            />
+          </div>
 
           {/* =================================
-              NORMAL TOURNAMENT FIELDS
+              LOCATION
+              BOTH TYPES
           ================================= */}
-          {editingTournament.type !== "display" && (
+
+          <div className={styles.formGroup}>
+            <label>Location</label>
+
+            <input
+              type="text"
+              value={editingTournament.location || ""}
+              onChange={(e) =>
+                setEditingTournament({
+                  ...editingTournament,
+                  location: e.target.value,
+                })
+              }
+              placeholder="Enter tournament location"
+            />
+          </div>
+
+          {/* =================================
+              ORGANIZER
+              BOTH TYPES
+          ================================= */}
+
+          <div className={styles.formGroup}>
+            <label>Organizer</label>
+
+            <input
+              type="text"
+              value={editingTournament.organizer || ""}
+              onChange={(e) =>
+                setEditingTournament({
+                  ...editingTournament,
+                  organizer: e.target.value,
+                })
+              }
+              placeholder="Enter organizer name"
+            />
+          </div>
+
+          {/* =================================
+              NORMAL TOURNAMENT EXTRA FIELDS
+          ================================= */}
+
+          {editingTournament.type === "normal" && (
             <>
+              {/* =================================
+                  START + END DATE
+              ================================= */}
+
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
                   <label>Start Date</label>
@@ -328,6 +314,82 @@ Players must register before the deadline`}
                 </div>
               </div>
 
+              {/* =================================
+                  REGISTRATION DATES
+              ================================= */}
+
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label>Registration Start Date</label>
+
+                  <input
+                    type="date"
+                    value={
+                      editingTournament.registrationStartDate?.slice(0, 10) ||
+                      ""
+                    }
+                    onChange={(e) =>
+                      setEditingTournament({
+                        ...editingTournament,
+                        registrationStartDate: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Registration End Date</label>
+
+                  <input
+                    type="date"
+                    value={
+                      editingTournament.registrationEndDate?.slice(0, 10) || ""
+                    }
+                    onChange={(e) =>
+                      setEditingTournament({
+                        ...editingTournament,
+                        registrationEndDate: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* =================================
+                  ENTRY & PARTICIPATION RULES
+              ================================= */}
+
+              <div className={styles.formGroup}>
+                <label>Entry & Participation Rules</label>
+
+                <textarea
+                  value={(editingTournament.entryParticipationRules || []).join(
+                    "\n",
+                  )}
+                  onChange={(e) => {
+                    const rules = e.target.value
+                      .split("\n")
+                      .map((rule) => rule.trim())
+                      .filter((rule) => rule !== "");
+
+                    setEditingTournament({
+                      ...editingTournament,
+                      entryParticipationRules: rules,
+                    });
+                  }}
+                  placeholder={`Enter one rule per line
+Example:
+Entry Fee: ₹1000
+Singles participation only
+Players must register before the deadline`}
+                  rows="6"
+                />
+              </div>
+
+              {/* =================================
+                  TOURNAMENT DIRECTOR
+              ================================= */}
+
               <div className={styles.formGroup}>
                 <label>Tournament Director</label>
 
@@ -344,6 +406,10 @@ Players must register before the deadline`}
                 />
               </div>
 
+              {/* =================================
+                  DIRECTOR PHONE
+              ================================= */}
+
               <div className={styles.formGroup}>
                 <label>Director Phone Number</label>
 
@@ -357,9 +423,14 @@ Players must register before the deadline`}
                     })
                   }
                   placeholder="Enter director phone number"
+                  pattern="[0-9]{10}"
                   maxLength="10"
                 />
               </div>
+
+              {/* =================================
+                  STATUS
+              ================================= */}
 
               <div className={styles.formGroup}>
                 <label>Status</label>
@@ -384,6 +455,7 @@ Players must register before the deadline`}
           {/* =================================
               FORM BUTTONS
           ================================= */}
+
           <div className={styles.formActions}>
             <button className={styles.saveButton} onClick={handleUpdate}>
               Save Changes
@@ -410,16 +482,19 @@ Players must register before the deadline`}
       {/* =================================
           LOADING
       ================================= */}
+
       {loading && <p className={styles.message}>Loading tournaments...</p>}
 
       {/* =================================
           ERROR
       ================================= */}
+
       {error && <p className={styles.error}>{error}</p>}
 
       {/* =================================
           NO TOURNAMENT
       ================================= */}
+
       {!loading && !error && tournaments.length === 0 && (
         <p className={styles.message}>No tournaments found.</p>
       )}
@@ -427,6 +502,7 @@ Players must register before the deadline`}
       {/* =================================
           TOURNAMENT LIST
       ================================= */}
+
       {!loading && !error && tournaments.length > 0 && (
         <div className={styles.tournamentList}>
           {tournaments.map((tournament) => (
@@ -438,11 +514,18 @@ Players must register before the deadline`}
                   <strong>Type:</strong>{" "}
                   {tournament.type === "display"
                     ? "Display Tournament"
-                    : "Normal Tournament"}
+                    : "Master Tournament"}
                 </p>
+
+                {/* DISPLAY TOURNAMENT */}
 
                 {tournament.type === "display" ? (
                   <>
+                    <p>
+                      <strong>Description:</strong>{" "}
+                      {tournament.description || "-"}
+                    </p>
+
                     <p>
                       <strong>Date:</strong>{" "}
                       {tournament.date
@@ -459,7 +542,29 @@ Players must register before the deadline`}
                     </p>
                   </>
                 ) : (
+                  /* NORMAL TOURNAMENT */
+
                   <>
+                    <p>
+                      <strong>Description:</strong>{" "}
+                      {tournament.description || "-"}
+                    </p>
+
+                    <p>
+                      <strong>Date:</strong>{" "}
+                      {tournament.date
+                        ? new Date(tournament.date).toLocaleDateString()
+                        : "-"}
+                    </p>
+
+                    <p>
+                      <strong>Location:</strong> {tournament.location || "-"}
+                    </p>
+
+                    <p>
+                      <strong>Organizer:</strong> {tournament.organizer || "-"}
+                    </p>
+
                     <p>
                       <strong>Start:</strong>{" "}
                       {tournament.startDate
@@ -489,6 +594,8 @@ Players must register before the deadline`}
                   </>
                 )}
               </div>
+
+              {/* EDIT BUTTON */}
 
               <button
                 className={styles.editButton}
