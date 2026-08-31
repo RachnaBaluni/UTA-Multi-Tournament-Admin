@@ -2,25 +2,43 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api";
 import styles from "./UpdateTournamentDetails.module.css";
-import { FiEdit, FiTrash2, FiPlus, FiX } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 
 const UpdateTournamentDetails = () => {
   const { tournamentId } = useParams();
 
-  const [details, setDetails] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDetail, setSelectedDetail] = useState(null);
-
   const BACKEND = import.meta.env.VITE_APP_BACKEND_URL;
 
+  // ============================
+  // TOURNAMENT DETAILS
+  // ============================
+
+  const [details, setDetails] = useState([]);
+  const [detailsLoading, setDetailsLoading] = useState(true);
+
+  // ============================
+  // PRIZES & BENEFITS
+  // ============================
+
+  const [prizes, setPrizes] = useState([]);
+  const [prizesLoading, setPrizesLoading] = useState(true);
+
+  // ============================
+  // MODAL
+  // ============================
+
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isPrizeModalOpen, setIsPrizeModalOpen] = useState(false);
+
+  const [selectedDetail, setSelectedDetail] = useState(null);
+  const [selectedPrize, setSelectedPrize] = useState(null);
+
   // =========================================================
-  // FETCH DETAILS
+  // FETCH TOURNAMENT DETAILS
   // =========================================================
 
   const fetchDetails = async () => {
-    setLoading(true);
+    setDetailsLoading(true);
 
     try {
       const response = await api.get(
@@ -37,41 +55,78 @@ const UpdateTournamentDetails = () => {
       }
     } catch (error) {
       console.error("Error fetching tournament details:", error);
+
       setDetails([]);
     } finally {
-      setLoading(false);
+      setDetailsLoading(false);
     }
   };
+
+  // =========================================================
+  // FETCH PRIZES & BENEFITS
+  // =========================================================
+
+  const fetchPrizes = async () => {
+    setPrizesLoading(true);
+
+    try {
+      const response = await api.get(
+        `${BACKEND}/api/prices-benifit?tournamentId=${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log("TOURNAMENT PRIZES & BENEFITS:", response.data);
+
+      if (response.data?.success) {
+        setPrizes(response.data.data || []);
+      } else {
+        setPrizes([]);
+      }
+    } catch (error) {
+      console.error("Error fetching prizes & benefits:", error);
+
+      setPrizes([]);
+    } finally {
+      setPrizesLoading(false);
+    }
+  };
+
+  // =========================================================
+  // FETCH BOTH
+  // =========================================================
 
   useEffect(() => {
     if (tournamentId) {
       fetchDetails();
+      fetchPrizes();
     }
   }, [tournamentId]);
 
   // =========================================================
-  // CREATE
+  // DETAIL CREATE
   // =========================================================
 
-  const handleCreate = () => {
+  const handleCreateDetail = () => {
     setSelectedDetail(null);
-    setIsModalOpen(true);
+    setIsDetailModalOpen(true);
   };
 
   // =========================================================
-  // EDIT
+  // DETAIL EDIT
   // =========================================================
 
-  const handleEdit = (detail) => {
+  const handleEditDetail = (detail) => {
     setSelectedDetail(detail);
-    setIsModalOpen(true);
+    setIsDetailModalOpen(true);
   };
 
   // =========================================================
-  // DELETE
+  // DETAIL DELETE
   // =========================================================
 
-  const handleDelete = async (detailId) => {
+  const handleDeleteDetail = async (detailId) => {
     if (
       !window.confirm("Are you sure you want to delete this tournament detail?")
     ) {
@@ -96,31 +151,87 @@ const UpdateTournamentDetails = () => {
   };
 
   // =========================================================
-  // MODAL CLOSE
+  // PRIZE CREATE
   // =========================================================
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
+  const handleCreatePrize = () => {
+    setSelectedPrize(null);
+    setIsPrizeModalOpen(true);
+  };
+
+  // =========================================================
+  // PRIZE EDIT
+  // =========================================================
+
+  const handleEditPrize = (prize) => {
+    setSelectedPrize(prize);
+    setIsPrizeModalOpen(true);
+  };
+
+  // =========================================================
+  // PRIZE DELETE
+  // =========================================================
+
+  const handleDeletePrize = async (prizeId) => {
+    if (
+      !window.confirm("Are you sure you want to delete this prize & benefit?")
+    ) {
+      return;
+    }
+
+    try {
+      await api.delete(`${BACKEND}/api/prices-benifit/${prizeId}`, {
+        withCredentials: true,
+      });
+
+      alert("Prize & benefit deleted successfully.");
+
+      fetchPrizes();
+    } catch (error) {
+      console.error("Error deleting prize & benefit:", error);
+
+      alert(
+        error.response?.data?.message || "Unable to delete prize & benefit.",
+      );
+    }
+  };
+
+  // =========================================================
+  // CLOSE DETAIL MODAL
+  // =========================================================
+
+  const closeDetailModal = () => {
+    setIsDetailModalOpen(false);
     setSelectedDetail(null);
     fetchDetails();
   };
 
+  // =========================================================
+  // CLOSE PRIZE MODAL
+  // =========================================================
+
+  const closePrizeModal = () => {
+    setIsPrizeModalOpen(false);
+    setSelectedPrize(null);
+    fetchPrizes();
+  };
+
   return (
     <div className={styles.updateDetails}>
-      {/* HEADER */}
+      {/* =====================================================
+          TOURNAMENT DETAILS
+      ===================================================== */}
 
       <div className={styles.header}>
         <h1>Tournament Details</h1>
 
-        <button className={styles.createButton} onClick={handleCreate}>
+        <button className={styles.createButton} onClick={handleCreateDetail}>
           <FiPlus />
           Create Detail
         </button>
       </div>
 
-      {/* LOADING */}
-
-      {loading ? (
+      {detailsLoading ? (
         <p className={styles.message}>Loading...</p>
       ) : details.length === 0 ? (
         <p className={styles.message}>No tournament details found.</p>
@@ -133,7 +244,6 @@ const UpdateTournamentDetails = () => {
                 <th>Title</th>
                 <th>Value</th>
                 <th>Rules</th>
-                <th>Prize & Benefits</th>
                 <th>Date</th>
                 <th>Showing</th>
                 <th>Actions</th>
@@ -143,23 +253,15 @@ const UpdateTournamentDetails = () => {
             <tbody>
               {details.map((detail) => (
                 <tr key={detail._id}>
-                  {/* KEY */}
-
                   <td data-label="Key">{detail.key || "-"}</td>
 
-                  {/* TITLE */}
-
                   <td data-label="Title">{detail.title || "-"}</td>
-
-                  {/* VALUE */}
 
                   <td data-label="Value">
                     <div className={styles.valueCell}>
                       {detail.value || "-"}
                     </div>
                   </td>
-
-                  {/* RULES */}
 
                   <td data-label="Rules">
                     {Array.isArray(detail.rules) && detail.rules.length > 0 ? (
@@ -173,54 +275,25 @@ const UpdateTournamentDetails = () => {
                     )}
                   </td>
 
-                  {/* PRIZE BENEFITS */}
-
-                  <td data-label="Prize & Benefits">
-                    {Array.isArray(detail.prizeBenefits) &&
-                    detail.prizeBenefits.length > 0 ? (
-                      <div>
-                        {detail.prizeBenefits.map((benefit, index) => (
-                          <div key={index} className={styles.prizePreview}>
-                            <strong>
-                              {benefit.title || "Prize & Benefit"}
-                            </strong>
-
-                            <div>{benefit.value || "-"}</div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-
-                  {/* DATE */}
-
                   <td data-label="Date">
                     {detail.date
                       ? new Date(detail.date).toLocaleDateString()
                       : "-"}
                   </td>
 
-                  {/* SHOWING */}
-
                   <td data-label="Showing">{detail.showing ? "Yes" : "No"}</td>
-
-                  {/* ACTIONS */}
 
                   <td data-label="Actions" className={styles.actions}>
                     <button
                       className={styles.editButton}
-                      onClick={() => handleEdit(detail)}
-                      title="Edit"
+                      onClick={() => handleEditDetail(detail)}
                     >
                       <FiEdit />
                     </button>
 
                     <button
                       className={styles.deleteButton}
-                      onClick={() => handleDelete(detail._id)}
-                      title="Delete"
+                      onClick={() => handleDeleteDetail(detail._id)}
                     >
                       <FiTrash2 />
                     </button>
@@ -232,13 +305,109 @@ const UpdateTournamentDetails = () => {
         </div>
       )}
 
-      {/* MODAL */}
+      {/* =====================================================
+          PRIZES & BENEFITS
+      ===================================================== */}
 
-      {isModalOpen && (
+      <div className={styles.header} style={{ marginTop: "50px" }}>
+        <h1>Prizes & Benefits</h1>
+
+        <button className={styles.createButton} onClick={handleCreatePrize}>
+          <FiPlus />
+          Add Prize & Benefit
+        </button>
+      </div>
+
+      {prizesLoading ? (
+        <p className={styles.message}>Loading...</p>
+      ) : prizes.length === 0 ? (
+        <p className={styles.message}>No prizes & benefits found.</p>
+      ) : (
+        <div className={styles.tableContainer}>
+          <table className={styles.detailsTable}>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Rules</th>
+                <th>Date</th>
+                <th>Showing</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {prizes.map((prize) => (
+                <tr key={prize._id}>
+                  <td data-label="Key">{prize.key || "-"}</td>
+
+                  <td data-label="Value">
+                    <div className={styles.valueCell}>{prize.value || "-"}</div>
+                  </td>
+
+                  <td data-label="Rules">
+                    {Array.isArray(prize.rules) && prize.rules.length > 0 ? (
+                      <ul className={styles.rulesList}>
+                        {prize.rules.map((rule, index) => (
+                          <li key={index}>{rule}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+
+                  <td data-label="Date">
+                    {prize.date
+                      ? new Date(prize.date).toLocaleDateString()
+                      : "-"}
+                  </td>
+
+                  <td data-label="Showing">{prize.showing ? "Yes" : "No"}</td>
+
+                  <td data-label="Actions" className={styles.actions}>
+                    <button
+                      className={styles.editButton}
+                      onClick={() => handleEditPrize(prize)}
+                    >
+                      <FiEdit />
+                    </button>
+
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDeletePrize(prize._id)}
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* =====================================================
+          TOURNAMENT DETAIL MODAL
+      ===================================================== */}
+
+      {isDetailModalOpen && (
         <TournamentDetailModal
           detail={selectedDetail}
           tournamentId={tournamentId}
-          onClose={handleModalClose}
+          onClose={closeDetailModal}
+        />
+      )}
+
+      {/* =====================================================
+          PRIZE MODAL
+      ===================================================== */}
+
+      {isPrizeModalOpen && (
+        <PrizeBenefitModal
+          prize={selectedPrize}
+          tournamentId={tournamentId}
+          onClose={closePrizeModal}
         />
       )}
     </div>
@@ -246,7 +415,7 @@ const UpdateTournamentDetails = () => {
 };
 
 // =========================================================
-// MODAL
+// TOURNAMENT DETAIL MODAL
 // =========================================================
 
 const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
@@ -254,102 +423,21 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
 
   const [formData, setFormData] = useState({
     key: detail?.key || "",
-
     title: detail?.title || "",
-
     value: detail?.value || "",
-
     date: detail?.date ? new Date(detail.date).toISOString().split("T")[0] : "",
-
     rules: Array.isArray(detail?.rules) ? detail.rules.join("\n") : "",
-
-    prizeBenefits: Array.isArray(detail?.prizeBenefits)
-      ? detail.prizeBenefits.map((item) => ({
-          title: item.title || "",
-
-          value: item.value || "",
-
-          rules: Array.isArray(item.rules) ? item.rules.join("\n") : "",
-
-          date: item.date
-            ? new Date(item.date).toISOString().split("T")[0]
-            : "",
-        }))
-      : [],
-
     showing: detail?.showing ?? true,
   });
-
-  // =========================================================
-  // CHANGE
-  // =========================================================
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
-  // =========================================================
-  // ADD PRIZE BENEFIT
-  // =========================================================
-
-  const addPrizeBenefit = () => {
-    setFormData((prev) => ({
-      ...prev,
-
-      prizeBenefits: [
-        ...prev.prizeBenefits,
-
-        {
-          title: "",
-          value: "",
-          rules: "",
-          date: "",
-        },
-      ],
-    }));
-  };
-
-  // =========================================================
-  // REMOVE PRIZE BENEFIT
-  // =========================================================
-
-  const removePrizeBenefit = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-
-      prizeBenefits: prev.prizeBenefits.filter((_, i) => i !== index),
-    }));
-  };
-
-  // =========================================================
-  // UPDATE PRIZE BENEFIT
-  // =========================================================
-
-  const updatePrizeBenefit = (index, field, value) => {
-    setFormData((prev) => {
-      const updated = [...prev.prizeBenefits];
-
-      updated[index] = {
-        ...updated[index],
-        [field]: value,
-      };
-
-      return {
-        ...prev,
-        prizeBenefits: updated,
-      };
-    });
-  };
-
-  // =========================================================
-  // SUBMIT
-  // =========================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -369,23 +457,6 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
         .split("\n")
         .map((rule) => rule.trim())
         .filter((rule) => rule !== ""),
-
-      // =========================================
-      // PRIZE BENEFITS
-      // =========================================
-
-      prizeBenefits: formData.prizeBenefits.map((item) => ({
-        title: item.title.trim(),
-
-        value: item.value,
-
-        rules: item.rules
-          .split("\n")
-          .map((rule) => rule.trim())
-          .filter((rule) => rule !== ""),
-
-        date: item.date || null,
-      })),
 
       showing: formData.showing,
     };
@@ -421,10 +492,6 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-          {/* =================================================
-              KEY
-          ================================================= */}
-
           <div className={styles.formGroup}>
             <label>Key</label>
 
@@ -433,14 +500,10 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
               name="key"
               value={formData.key}
               onChange={handleChange}
-              placeholder="Example: eligibility"
+              placeholder="Example: entry_rules"
               required
             />
           </div>
-
-          {/* =================================================
-              TITLE
-          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Title</label>
@@ -450,13 +513,9 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="Enter title"
+              placeholder="Example: Entry Rules"
             />
           </div>
-
-          {/* =================================================
-              VALUE
-          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Value</label>
@@ -465,15 +524,11 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
               name="value"
               value={formData.value}
               onChange={handleChange}
-              placeholder="Enter detail value"
+              placeholder="Enter tournament detail"
               rows="6"
               required
             />
           </div>
-
-          {/* =================================================
-              DATE
-          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Date</label>
@@ -487,10 +542,6 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
             />
           </div>
 
-          {/* =================================================
-              RULES
-          ================================================= */}
-
           <div className={styles.formGroup}>
             <label>Rules</label>
 
@@ -498,131 +549,10 @@ const TournamentDetailModal = ({ detail, tournamentId, onClose }) => {
               name="rules"
               value={formData.rules}
               onChange={handleChange}
-              placeholder={`Enter one rule per line
-
-Example:
-Players must register before deadline
-Valid UTA membership required
-Entry fee must be paid`}
+              placeholder={`Enter one rule per line`}
               rows="6"
             />
           </div>
-
-          {/* =================================================
-              PRIZE & BENEFITS
-          ================================================= */}
-
-          <div className={styles.prizeSection}>
-            <div className={styles.prizeHeader}>
-              <h3>Prize & Benefits</h3>
-
-              <button
-                type="button"
-                className={styles.addPrizeButton}
-                onClick={addPrizeBenefit}
-              >
-                <FiPlus />
-                Add Prize / Benefit
-              </button>
-            </div>
-
-            {/* PRIZE ITEMS */}
-
-            {formData.prizeBenefits.length === 0 && (
-              <p className={styles.noPrizeText}>
-                No prize or benefit added yet.
-              </p>
-            )}
-
-            {formData.prizeBenefits.map((item, index) => (
-              <div key={index} className={styles.prizeItem}>
-                <div className={styles.prizeItemHeader}>
-                  <strong>Prize / Benefit #{index + 1}</strong>
-
-                  <button
-                    type="button"
-                    className={styles.removePrizeButton}
-                    onClick={() => removePrizeBenefit(index)}
-                  >
-                    <FiX />
-                  </button>
-                </div>
-
-                {/* TITLE */}
-
-                <div className={styles.formGroup}>
-                  <label>Prize / Benefit Title</label>
-
-                  <input
-                    type="text"
-                    value={item.title}
-                    onChange={(e) =>
-                      updatePrizeBenefit(index, "title", e.target.value)
-                    }
-                    placeholder="Example: Prize Money"
-                  />
-                </div>
-
-                {/* VALUE */}
-
-                <div className={styles.formGroup}>
-                  <label>Prize / Benefit Details</label>
-
-                  <textarea
-                    value={item.value}
-                    onChange={(e) =>
-                      updatePrizeBenefit(index, "value", e.target.value)
-                    }
-                    placeholder={`Enter prize / benefit details
-
-Example:
-Winner - ₹10,000
-Runner Up - ₹5,000
-Winner Trophy
-Runner Up Trophy`}
-                    rows="6"
-                  />
-                </div>
-
-                {/* RULES */}
-
-                <div className={styles.formGroup}>
-                  <label>Prize / Benefit Rules</label>
-
-                  <textarea
-                    value={item.rules}
-                    onChange={(e) =>
-                      updatePrizeBenefit(index, "rules", e.target.value)
-                    }
-                    placeholder={`Enter one rule per line
-
-Example:
-Prize will be given after final
-Winner must collect trophy`}
-                    rows="4"
-                  />
-                </div>
-
-                {/* DATE */}
-
-                <div className={styles.formGroup}>
-                  <label>Prize / Benefit Date</label>
-
-                  <input
-                    type="date"
-                    value={item.date}
-                    onChange={(e) =>
-                      updatePrizeBenefit(index, "date", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* =================================================
-              SHOWING
-          ================================================= */}
 
           <div className={styles.formGroup}>
             <label className={styles.checkboxLabel}>
@@ -636,10 +566,6 @@ Winner must collect trophy`}
             </label>
           </div>
 
-          {/* =================================================
-              BUTTONS
-          ================================================= */}
-
           <div className={styles.modalActions}>
             <button
               type="button"
@@ -651,6 +577,181 @@ Winner must collect trophy`}
 
             <button type="submit" className={styles.saveButton}>
               {detail ? "Update" : "Save"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// =========================================================
+// PRIZE & BENEFIT MODAL
+// =========================================================
+
+const PrizeBenefitModal = ({ prize, tournamentId, onClose }) => {
+  const BACKEND = import.meta.env.VITE_APP_BACKEND_URL;
+
+  const [formData, setFormData] = useState({
+    key: prize?.key || "",
+    value: prize?.value || "",
+    date: prize?.date ? new Date(prize.date).toISOString().split("T")[0] : "",
+    rules: Array.isArray(prize?.rules) ? prize.rules.join("\n") : "",
+    showing: prize?.showing ?? true,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const dataToSubmit = {
+      tournamentId,
+
+      key: formData.key.trim(),
+
+      value: formData.value,
+
+      date: formData.date,
+
+      rules: formData.rules
+        .split("\n")
+        .map((rule) => rule.trim())
+        .filter((rule) => rule !== ""),
+
+      showing: formData.showing,
+    };
+
+    try {
+      if (prize) {
+        await api.put(
+          `${BACKEND}/api/prices-benifit/${prize._id}`,
+          dataToSubmit,
+          {
+            withCredentials: true,
+          },
+        );
+      } else {
+        await api.post(`${BACKEND}/api/prices-benifit`, dataToSubmit, {
+          withCredentials: true,
+        });
+      }
+
+      onClose();
+    } catch (error) {
+      console.error("Error saving prize & benefit:", error);
+
+      alert(error.response?.data?.message || "Error saving prize & benefit.");
+    }
+  };
+
+  return (
+    <div className={styles.modalBackdrop}>
+      <div className={styles.modalContent}>
+        <h2>{prize ? "Edit Prize & Benefit" : "Add Prize & Benefit"}</h2>
+
+        <form onSubmit={handleSubmit}>
+          {/* KEY */}
+
+          <div className={styles.formGroup}>
+            <label>Key</label>
+
+            <input
+              type="text"
+              name="key"
+              value={formData.key}
+              onChange={handleChange}
+              placeholder="Example: prize_money"
+              required
+            />
+          </div>
+
+          {/* VALUE */}
+
+          <div className={styles.formGroup}>
+            <label>Prize & Benefit Details</label>
+
+            <textarea
+              name="value"
+              value={formData.value}
+              onChange={handleChange}
+              placeholder={`Example:
+Prize Money
+Participant Benefits
+Complimentary stay
+Breakfast and Lunch
+Gift hampers`}
+              rows="8"
+              required
+            />
+          </div>
+
+          {/* DATE */}
+
+          <div className={styles.formGroup}>
+            <label>Date</label>
+
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* RULES */}
+
+          <div className={styles.formGroup}>
+            <label>Rules / Benefits</label>
+
+            <textarea
+              name="rules"
+              value={formData.rules}
+              onChange={handleChange}
+              placeholder={`Enter one item per line
+Example:
+Winner gets prize money
+Runner-up gets prize money
+Every participant gets gift hamper`}
+              rows="7"
+            />
+          </div>
+
+          {/* SHOWING */}
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                name="showing"
+                checked={formData.showing}
+                onChange={handleChange}
+              />
+              Showing
+            </label>
+          </div>
+
+          {/* BUTTONS */}
+
+          <div className={styles.modalActions}>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+
+            <button type="submit" className={styles.saveButton}>
+              {prize ? "Update" : "Save"}
             </button>
           </div>
         </form>
