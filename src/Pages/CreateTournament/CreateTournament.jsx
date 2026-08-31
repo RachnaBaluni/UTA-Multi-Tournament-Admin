@@ -16,7 +16,6 @@ const CreateTournament = () => {
     director: "",
     directorPhone: "",
     type: "",
-    entryParticipationRules: [""],
     registrationStartDate: "",
     registrationEndDate: "",
   });
@@ -53,21 +52,6 @@ const CreateTournament = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  // ============================
-  // ENTRY & PARTICIPATION RULES
-  // ============================
-  const handleRulesChange = (e) => {
-    const rules = e.target.value
-      .split("\n")
-      .map((rule) => rule.trim())
-      .filter((rule) => rule !== "");
-
-    setFormData((prev) => ({
-      ...prev,
-      entryParticipationRules: rules,
     }));
   };
 
@@ -138,7 +122,6 @@ const CreateTournament = () => {
           director: "",
           directorPhone: "",
           type: "",
-          entryParticipationRules: [""],
           registrationStartDate: "",
           registrationEndDate: "",
         });
@@ -347,44 +330,6 @@ const CreateTournament = () => {
                     required
                   />
                 </div>
-              </div>
-
-              {/* =================================
-                  ENTRY & PARTICIPATION RULES
-              ================================= */}
-
-              <div className={styles.formGroup}>
-                <label>Entry & Participation Rules</label>
-
-                <textarea
-                  name="entryParticipationRules"
-                  value={formData.entryParticipationRules.join("\n")}
-                  onChange={handleRulesChange}
-                  placeholder={`Enter one rule per line
-Example:
-Entry Fee: ₹1000
-Singles participation only
-Players must register before the deadline`}
-                  rows="6"
-                  required
-                />
-              </div>
-
-              {/* =================================
-                  TOURNAMENT DIRECTOR
-              ================================= */}
-
-              <div className={styles.formGroup}>
-                <label>Tournament Director</label>
-
-                <input
-                  type="text"
-                  name="director"
-                  value={formData.director}
-                  onChange={handleChange}
-                  placeholder="Enter tournament director name"
-                  required
-                />
               </div>
 
               {/* =================================
