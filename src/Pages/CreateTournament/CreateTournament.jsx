@@ -216,21 +216,22 @@ const CreateTournament = () => {
           </div>
 
           {/* =================================
-              DATE
-              BOTH TYPES
-          ================================= */}
+    DISPLAY TOURNAMENT DATE
+================================= */}
 
-          <div className={styles.formGroup}>
-            <label>Tournament Date</label>
+          {tournamentType === "display" && (
+            <div className={styles.formGroup}>
+              <label>Tournament Date</label>
 
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-            />
-          </div>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )}
 
           {/* =================================
               LOCATION
