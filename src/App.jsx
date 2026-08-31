@@ -8,7 +8,6 @@ import Members from "./Pages/Members/Members";
 import Events from "./Pages/Events/Events";
 import Approvals from "./Pages/Approvals/Approvals";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import Nissan from "./Pages/Nissan/Settings";
 import UpdateTeamRanking from "./Pages/Nissan/Ranking/UpdateTeamRanking";
 import ViewPlayerList from "./Pages/Nissan/Players/ViewPlayerList";
 import ManageDraw from "./Pages/Nissan/Draws/ManageDraw";
@@ -19,8 +18,7 @@ import ViewPlayerJourney from "./Pages/Nissan/Journey/ViewPlayerJourney";
 import OrderOfPlay from "./Pages/Nissan/OrderOfPlay/OrderOfPlay";
 import EditTournament from "./Pages/EditTournament/EditTournament";
 import CreateTournament from "./Pages/CreateTournament/CreateTournament";
-import UpdateTournamentDetails from "./Pages/Nissan/UpdateTournamentDetails/UpdateTournamentDetails";
-
+import UpdateTournamentDetails from "./Pages/TournamentDetails/UpdateTournamentDetails";
 import { Toaster } from "sonner";
 
 function App() {
@@ -106,16 +104,6 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Events />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/nissan"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Nissan />
               </Layout>
             </ProtectedRoute>
           }

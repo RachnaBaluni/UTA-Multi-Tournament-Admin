@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../../api";
+import api from "../../api";
 import styles from "./UpdateTournamentDetails.module.css";
 import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 
