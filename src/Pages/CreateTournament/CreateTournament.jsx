@@ -20,6 +20,14 @@ const CreateTournament = () => {
   const [tournamentDetails, setTournamentDetails] = useState([]);
   const [prizesBenefits, setPrizesBenefits] = useState([]);
 
+  const [venue, setVenue] = useState({
+    key: "",
+    value: "",
+    date: "",
+    rules: "",
+    showing: true,
+  });
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -40,6 +48,19 @@ const CreateTournament = () => {
 
     setMessage("");
     setError("");
+  };
+
+  // =========================================================
+  // VENUE CHANGE
+  // =========================================================
+
+  const handleVenueChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setVenue((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   // =========================================================
@@ -151,6 +172,14 @@ const CreateTournament = () => {
         return;
       }
 
+      // Validate venue
+
+      if (!venue.key.trim() || !venue.value.trim() || !venue.date) {
+        setError("Please enter venue name, venue details, and venue date.");
+        setLoading(false);
+        return;
+      }
+
       // =====================================================
       // 1. CREATE MASTER TOURNAMENT
       // =====================================================
@@ -231,6 +260,28 @@ const CreateTournament = () => {
       }
 
       // =====================================================
+      // 4. CREATE VENUE
+      // =====================================================
+
+      await axios.post(
+        `${BACKEND}/api/venue`,
+        {
+          tournamentId,
+          key: venue.key.trim(),
+          value: venue.value.trim(),
+          date: venue.date,
+          rules: venue.rules
+            .split("\n")
+            .map((rule) => rule.trim())
+            .filter((rule) => rule !== ""),
+          showing: venue.showing,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      // =====================================================
       // SUCCESS
       // =====================================================
 
@@ -240,6 +291,14 @@ const CreateTournament = () => {
 
       setTournamentDetails([]);
       setPrizesBenefits([]);
+
+      setVenue({
+        key: "",
+        value: "",
+        date: "",
+        rules: "",
+        showing: true,
+      });
 
       setFormData({
         name: "",
@@ -677,6 +736,82 @@ const CreateTournament = () => {
             ))}
           </section>
         </div>
+
+        {/* =================================================
+            VENUE
+        ================================================= */}
+
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2>Venue</h2>
+              <p>Add tournament venue information</p>
+            </div>
+          </div>
+
+          <div className={styles.formGrid}>
+            <div className={styles.formGroup}>
+              <label>Venue Name</label>
+
+              <input
+                type="text"
+                name="key"
+                value={venue.key}
+                onChange={handleVenueChange}
+                placeholder="Example: Dehradun Tennis Club"
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Venue Details</label>
+
+              <input
+                type="text"
+                name="value"
+                value={venue.value}
+                onChange={handleVenueChange}
+                placeholder="Enter venue address or details"
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Venue Date</label>
+
+              <input
+                type="date"
+                name="date"
+                value={venue.date}
+                onChange={handleVenueChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Venue Rules</label>
+
+            <textarea
+              name="rules"
+              value={venue.rules}
+              onChange={handleVenueChange}
+              placeholder="Enter one rule per line"
+              rows="4"
+            />
+          </div>
+
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              name="showing"
+              checked={venue.showing}
+              onChange={handleVenueChange}
+            />
+
+            <span>Showing</span>
+          </label>
+        </section>
 
         {/* =================================================
             CREATE TOURNAMENT
