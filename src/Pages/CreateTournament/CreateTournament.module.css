@@ -1,118 +1,395 @@
 .container {
-  padding: 20px;
+  width: 100%;
+  padding: 25px 30px;
+  box-sizing: border-box;
+  background: #f7faf7;
+  min-height: 100vh;
 }
 
 .title {
-  font-size: 28px;
+  font-size: 30px;
+  font-weight: 700;
   color: #2e7d32;
-  margin-bottom: 20px;
+  margin: 0 0 25px;
 }
 
 .form {
   width: 100%;
-  max-width: 700px;
-  background-color: #ffffff;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  max-width: 1200px;
+  margin: 0 auto;
   box-sizing: border-box;
+}
+
+/* =========================================================
+   TOURNAMENT TYPE
+========================================================= */
+
+.typeBox {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #dce8dd;
+  border-left: 5px solid #2e7d32;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.06);
+}
+
+.typeLabel {
+  display: block;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 5px;
+}
+
+.typeBox h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #2e7d32;
+}
+
+.typeBadge {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+  border-radius: 20px;
+  padding: 7px 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   MAIN SECTIONS
+========================================================= */
+
+.section {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e1e8e2;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 22px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #edf1ed;
+}
+
+.sectionHeader h2 {
+  margin: 0 0 5px;
+  color: #2e7d32;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.sectionHeader p {
+  margin: 0;
+  color: #777;
+  font-size: 13px;
+}
+
+/* =========================================================
+   TWO COLUMN LAYOUT
+========================================================= */
+
+.twoColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.twoColumnLayout .section {
+  height: 100%;
+}
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
-}
-.formGroup textarea {
-  width: 100%;
-  min-height: 140px;
-  padding: 11px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 15px;
-  font-family: inherit;
-  color: #333;
-  background-color: #ffffff;
-  box-sizing: border-box;
-  outline: none;
-  resize: vertical;
-  transition:
-    border-color 0.3s,
-    box-shadow 0.3s;
+  margin-bottom: 18px;
 }
 
-.formGroup textarea:focus {
-  border-color: #2e7d32;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
-}
 .formGroup label {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 }
 
 .formGroup input,
-.formGroup select {
+.formGroup select,
+.formGroup textarea {
   width: 100%;
   padding: 11px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 15px;
+  border: 1px solid #d9e0da;
+  border-radius: 7px;
+  font-size: 14px;
   color: #333;
-  background-color: #ffffff;
+  background: #ffffff;
   box-sizing: border-box;
   outline: none;
+  font-family: inherit;
   transition:
-    border-color 0.3s,
-    box-shadow 0.3s;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 90px;
 }
 
 .formGroup input:focus,
-.formGroup select:focus {
+.formGroup select:focus,
+.formGroup textarea:focus {
   border-color: #2e7d32;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
 }
 
-.formRow {
-  display: flex;
-  gap: 20px;
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: #a0a0a0;
 }
 
-.formRow .formGroup {
-  flex: 1;
-}
+/* =========================================================
+   ADD BUTTON
+========================================================= */
 
-.createButton {
-  background-color: #2e7d32;
-  color: white;
-  border: none;
+.addButton {
+  border: 1px solid #2e7d32;
+  background: #e8f5e9;
+  color: #2e7d32;
   border-radius: 6px;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-.createButton:hover {
-  background-color: #1b5e20;
+.addButton:hover {
+  background: #2e7d32;
+  color: #ffffff;
 }
 
-.createButton:disabled {
+/* =========================================================
+   EMPTY SECTION
+========================================================= */
+
+.emptySection {
+  border: 1px dashed #c8d8ca;
+  background: #fafdfb;
+  border-radius: 9px;
+  padding: 35px 15px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.emptyIcon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.emptySection p {
+  margin: 0 0 5px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.emptySection small {
+  color: #999;
+  font-size: 12px;
+}
+
+/* =========================================================
+   DETAIL BOX
+========================================================= */
+
+.detailBox {
+  border: 1px solid #dce8dd;
+  background: #fbfdfb;
+  border-radius: 9px;
+  padding: 17px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 17px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e7eee8;
+}
+
+.detailHeader h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+/* =========================================================
+   DELETE BUTTON
+========================================================= */
+
+.deleteButton {
+  background: transparent;
+  border: 1px solid #e0b8b8;
+  color: #c62828;
+  border-radius: 5px;
+  padding: 5px 9px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: #c62828;
+  color: #ffffff;
+}
+
+/* =========================================================
+   CHECKBOX
+========================================================= */
+
+.checkboxLabel {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  cursor: pointer;
+  color: #444 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.checkboxLabel input {
+  width: 16px !important;
+  height: 16px;
+  margin: 0;
+  accent-color: #2e7d32;
+  cursor: pointer;
+}
+
+/* =========================================================
+   CREATE BUTTON
+========================================================= */
+
+.submitArea {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 5px 0 20px;
+}
+
+.submitButton {
+  min-width: 260px;
+  background: #2e7d32;
+  color: #ffffff;
+  border: none;
+  border-radius: 7px;
+  padding: 13px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.submitButton:hover {
+  background: #1b5e20;
+  transform: translateY(-1px);
+}
+
+.submitButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* =========================================================
+   MESSAGES
+========================================================= */
+
 .success {
+  width: 100%;
+  box-sizing: border-box;
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
   color: #2e7d32;
-  margin-top: 15px;
-  font-weight: 500;
+  padding: 12px 15px;
+  border-radius: 7px;
+  margin: 0 0 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .error {
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
   color: #c62828;
-  margin-top: 15px;
-  font-weight: 500;
+  padding: 12px 15px;
+  border-radius: 7px;
+  margin: 0 0 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .twoColumnLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
@@ -121,19 +398,50 @@
   }
 
   .title {
-    font-size: 24px;
+    font-size: 25px;
   }
 
-  .form {
-    padding: 20px;
+  .section {
+    padding: 18px;
   }
 
-  .formRow {
-    flex-direction: column;
-    gap: 0;
+  .sectionHeader {
+    align-items: flex-start;
   }
 
-  .createButton {
+  .typeBox {
+    padding: 15px;
+  }
+
+  .submitButton {
     width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .container {
+    padding: 10px;
+  }
+
+  .section {
+    padding: 15px;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+  }
+
+  .addButton {
+    width: 100%;
+  }
+
+  .typeBox {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .typeBadge {
+    align-self: flex-start;
   }
 }
