@@ -233,16 +233,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                         Update Events
                       </NavLink>
                     </li>
-                    {/* TOURNAMENT DETAILS */}
-                    <li>
-                      <NavLink
-                        to={`/tournament/${tournament._id}/tournament-details`}
-                        onClick={toggleSidebar}
-                      >
-                        <FiInfo className={styles.icon} />
-                        Tournament Details
-                      </NavLink>
-                    </li>
+
                     {/* REGISTRATION FIELDS */}
                     <li>
                       <NavLink
