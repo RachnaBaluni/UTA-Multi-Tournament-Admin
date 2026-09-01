@@ -24,11 +24,24 @@ const CreateTournament = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  // ============================
+  // TOURNAMENT DETAILS
+  // ============================
+
+  const [tournamentDetails, setTournamentDetails] = useState([]);
+
+  // ============================
+  // PRIZES & BENEFITS
+  // ============================
+
+  const [prizesBenefits, setPrizesBenefits] = useState([]);
+
   const BACKEND = import.meta.env.VITE_APP_BACKEND_URL;
 
   // ============================
-  // TYPE SELECT
+  // TYPE CHANGE
   // ============================
+
   const handleTypeChange = (e) => {
     const type = e.target.value;
 
@@ -46,6 +59,7 @@ const CreateTournament = () => {
   // ============================
   // FORM CHANGE
   // ============================
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -55,9 +69,83 @@ const CreateTournament = () => {
     }));
   };
 
-  // ============================
+  // =========================================================
+  // TOURNAMENT DETAILS
+  // =========================================================
+
+  const addTournamentDetail = () => {
+    setTournamentDetails((prev) => [
+      ...prev,
+      {
+        key: "",
+        title: "",
+        value: "",
+        date: "",
+        rules: "",
+        showing: true,
+      },
+    ]);
+  };
+
+  const handleDetailChange = (index, e) => {
+    const { name, value, type, checked } = e.target;
+
+    setTournamentDetails((prev) =>
+      prev.map((detail, i) =>
+        i === index
+          ? {
+              ...detail,
+              [name]: type === "checkbox" ? checked : value,
+            }
+          : detail,
+      ),
+    );
+  };
+
+  const removeTournamentDetail = (index) => {
+    setTournamentDetails((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // =========================================================
+  // PRIZES & BENEFITS
+  // =========================================================
+
+  const addPrizeBenefit = () => {
+    setPrizesBenefits((prev) => [
+      ...prev,
+      {
+        key: "",
+        value: "",
+        date: "",
+        rules: "",
+        showing: true,
+      },
+    ]);
+  };
+
+  const handlePrizeChange = (index, e) => {
+    const { name, value, type, checked } = e.target;
+
+    setPrizesBenefits((prev) =>
+      prev.map((prize, i) =>
+        i === index
+          ? {
+              ...prize,
+              [name]: type === "checkbox" ? checked : value,
+            }
+          : prize,
+      ),
+    );
+  };
+
+  const removePrizeBenefit = (index) => {
+    setPrizesBenefits((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // =========================================================
   // SUBMIT
-  // ============================
+  // =========================================================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -90,11 +178,11 @@ const CreateTournament = () => {
         return;
       }
 
-      // ============================
-      // CREATE TOURNAMENT
-      // ============================
+      // =========================================================
+      // 1. CREATE TOURNAMENT
+      // =========================================================
 
-      const response = await axios.post(
+      const tournamentResponse = await axios.post(
         `${BACKEND}/api/tournaments`,
         formData,
         {
@@ -102,36 +190,107 @@ const CreateTournament = () => {
         },
       );
 
-      if (response.data.success) {
-        setMessage("Tournament created successfully.");
-
-        // ============================
-        // RESET FORM
-        // ============================
-
-        setTournamentType("");
-
-        setFormData({
-          name: "",
-          description: "",
-          date: "",
-          location: "",
-          organizer: "",
-          startDate: "",
-          endDate: "",
-          director: "",
-          directorPhone: "",
-          type: "",
-          registrationStartDate: "",
-          registrationEndDate: "",
-        });
+      if (!tournamentResponse.data.success) {
+        throw new Error("Tournament creation failed.");
       }
+
+      const createdTournament = tournamentResponse.data.data;
+
+      const tournamentId = createdTournament._id;
+
+      // =========================================================
+      // 2. CREATE TOURNAMENT DETAILS
+      // =========================================================
+
+      for (const detail of tournamentDetails) {
+        if (!detail.key.trim() || !detail.value.trim()) {
+          continue;
+        }
+
+        await axios.post(
+          `${BACKEND}/api/tournament-details`,
+          {
+            tournamentId,
+            key: detail.key.trim(),
+            title: detail.title.trim(),
+            value: detail.value,
+            date: detail.date,
+            rules: detail.rules
+              .split("\n")
+              .map((rule) => rule.trim())
+              .filter((rule) => rule !== ""),
+            showing: detail.showing,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+      }
+
+      // =========================================================
+      // 3. CREATE PRIZES & BENEFITS
+      // =========================================================
+
+      for (const prize of prizesBenefits) {
+        if (!prize.key.trim() || !prize.value.trim()) {
+          continue;
+        }
+
+        await axios.post(
+          `${BACKEND}/api/prices-benifit`,
+          {
+            tournamentId,
+            key: prize.key.trim(),
+            value: prize.value,
+            date: prize.date,
+            rules: prize.rules
+              .split("\n")
+              .map((rule) => rule.trim())
+              .filter((rule) => rule !== ""),
+            showing: prize.showing,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+      }
+
+      // =========================================================
+      // SUCCESS
+      // =========================================================
+
+      setMessage("Tournament created successfully.");
+
+      // =========================================================
+      // RESET
+      // =========================================================
+
+      setTournamentType("");
+
+      setTournamentDetails([]);
+      setPrizesBenefits([]);
+
+      setFormData({
+        name: "",
+        description: "",
+        date: "",
+        location: "",
+        organizer: "",
+        startDate: "",
+        endDate: "",
+        director: "",
+        directorPhone: "",
+        type: "",
+        registrationStartDate: "",
+        registrationEndDate: "",
+      });
     } catch (error) {
       console.error("Error creating tournament:", error);
 
       setError(
         error.response?.data?.message ||
           error.response?.data?.error ||
+          error.message ||
           "Unable to create tournament.",
       );
     } finally {
@@ -143,9 +302,9 @@ const CreateTournament = () => {
     <div className={styles.container}>
       <h1 className={styles.title}>Create Tournament</h1>
 
-      {/* =================================
-          STEP 1 - SELECT TOURNAMENT TYPE
-      ================================= */}
+      {/* =====================================================
+          STEP 1 - TOURNAMENT TYPE
+      ===================================================== */}
 
       {!tournamentType && (
         <div className={styles.form}>
@@ -161,15 +320,15 @@ const CreateTournament = () => {
         </div>
       )}
 
-      {/* =================================
-          STEP 2 - TOURNAMENT FORM
-      ================================= */}
+      {/* =====================================================
+          MAIN FORM
+      ===================================================== */}
 
       {tournamentType && (
         <form className={styles.form} onSubmit={handleSubmit}>
-          {/* =================================
+          {/* =================================================
               TOURNAMENT TYPE
-          ================================= */}
+          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Tournament Type</label>
@@ -180,9 +339,9 @@ const CreateTournament = () => {
             </select>
           </div>
 
-          {/* =================================
+          {/* =================================================
               TOURNAMENT NAME
-          ================================= */}
+          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Tournament Name</label>
@@ -197,10 +356,9 @@ const CreateTournament = () => {
             />
           </div>
 
-          {/* =================================
+          {/* =================================================
               DESCRIPTION
-              BOTH TYPES
-          ================================= */}
+          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Description</label>
@@ -215,9 +373,9 @@ const CreateTournament = () => {
             />
           </div>
 
-          {/* =================================
-    DISPLAY TOURNAMENT DATE
-================================= */}
+          {/* =================================================
+              DISPLAY TOURNAMENT DATE
+          ================================================= */}
 
           {tournamentType === "display" && (
             <div className={styles.formGroup}>
@@ -233,10 +391,9 @@ const CreateTournament = () => {
             </div>
           )}
 
-          {/* =================================
+          {/* =================================================
               LOCATION
-              BOTH TYPES
-          ================================= */}
+          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Location</label>
@@ -251,10 +408,9 @@ const CreateTournament = () => {
             />
           </div>
 
-          {/* =================================
+          {/* =================================================
               ORGANIZER
-              BOTH TYPES
-          ================================= */}
+          ================================================= */}
 
           <div className={styles.formGroup}>
             <label>Organizer</label>
@@ -269,9 +425,9 @@ const CreateTournament = () => {
             />
           </div>
 
-          {/* =================================
-              NORMAL TOURNAMENT EXTRA FIELDS
-          ================================= */}
+          {/* =================================================
+              NORMAL TOURNAMENT FIELDS
+          ================================================= */}
 
           {tournamentType === "normal" && (
             <>
@@ -303,9 +459,7 @@ const CreateTournament = () => {
                 </div>
               </div>
 
-              {/* =================================
-                  REGISTRATION DATES
-              ================================= */}
+              {/* REGISTRATION DATES */}
 
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
@@ -333,9 +487,22 @@ const CreateTournament = () => {
                 </div>
               </div>
 
-              {/* =================================
-                  DIRECTOR PHONE
-              ================================= */}
+              {/* DIRECTOR */}
+
+              <div className={styles.formGroup}>
+                <label>Director</label>
+
+                <input
+                  type="text"
+                  name="director"
+                  value={formData.director}
+                  onChange={handleChange}
+                  placeholder="Enter tournament director"
+                  required
+                />
+              </div>
+
+              {/* DIRECTOR PHONE */}
 
               <div className={styles.formGroup}>
                 <label>Director Phone Number</label>
@@ -354,9 +521,229 @@ const CreateTournament = () => {
             </>
           )}
 
-          {/* =================================
-              SUBMIT BUTTON
-          ================================= */}
+          {/* =================================================
+              TOURNAMENT DETAILS SECTION
+          ================================================= */}
+
+          <div className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>Tournament Details</h2>
+
+              <button
+                type="button"
+                className={styles.createButton}
+                onClick={addTournamentDetail}
+              >
+                + Add Tournament Detail
+              </button>
+            </div>
+
+            {tournamentDetails.map((detail, index) => (
+              <div className={styles.detailBox} key={index}>
+                <div className={styles.detailHeader}>
+                  <h3>Tournament Detail {index + 1}</h3>
+
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => removeTournamentDetail(index)}
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                {/* KEY */}
+
+                <div className={styles.formGroup}>
+                  <label>Key</label>
+
+                  <input
+                    type="text"
+                    name="key"
+                    value={detail.key}
+                    onChange={(e) => handleDetailChange(index, e)}
+                    placeholder="Example: entry_rules"
+                  />
+                </div>
+
+                {/* TITLE */}
+
+                <div className={styles.formGroup}>
+                  <label>Title</label>
+
+                  <input
+                    type="text"
+                    name="title"
+                    value={detail.title}
+                    onChange={(e) => handleDetailChange(index, e)}
+                    placeholder="Example: Entry Rules"
+                  />
+                </div>
+
+                {/* VALUE */}
+
+                <div className={styles.formGroup}>
+                  <label>Value</label>
+
+                  <textarea
+                    name="value"
+                    value={detail.value}
+                    onChange={(e) => handleDetailChange(index, e)}
+                    placeholder="Enter tournament detail"
+                    rows="5"
+                  />
+                </div>
+
+                {/* DATE */}
+
+                <div className={styles.formGroup}>
+                  <label>Date</label>
+
+                  <input
+                    type="date"
+                    name="date"
+                    value={detail.date}
+                    onChange={(e) => handleDetailChange(index, e)}
+                  />
+                </div>
+
+                {/* RULES */}
+
+                <div className={styles.formGroup}>
+                  <label>Rules</label>
+
+                  <textarea
+                    name="rules"
+                    value={detail.rules}
+                    onChange={(e) => handleDetailChange(index, e)}
+                    placeholder="Enter one rule per line"
+                    rows="5"
+                  />
+                </div>
+
+                {/* SHOWING */}
+
+                <div className={styles.formGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="showing"
+                      checked={detail.showing}
+                      onChange={(e) => handleDetailChange(index, e)}
+                    />
+                    Showing
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* =================================================
+              PRIZES & BENEFITS SECTION
+          ================================================= */}
+
+          <div className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>Prizes & Benefits</h2>
+
+              <button
+                type="button"
+                className={styles.createButton}
+                onClick={addPrizeBenefit}
+              >
+                + Add Prize & Benefit
+              </button>
+            </div>
+
+            {prizesBenefits.map((prize, index) => (
+              <div className={styles.detailBox} key={index}>
+                <div className={styles.detailHeader}>
+                  <h3>Prize & Benefit {index + 1}</h3>
+
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => removePrizeBenefit(index)}
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                {/* KEY */}
+
+                <div className={styles.formGroup}>
+                  <label>Key</label>
+
+                  <input
+                    type="text"
+                    name="key"
+                    value={prize.key}
+                    onChange={(e) => handlePrizeChange(index, e)}
+                    placeholder="Example: prize_money"
+                  />
+                </div>
+
+                {/* VALUE */}
+
+                <div className={styles.formGroup}>
+                  <label>Prize & Benefit Details</label>
+
+                  <textarea
+                    name="value"
+                    value={prize.value}
+                    onChange={(e) => handlePrizeChange(index, e)}
+                    placeholder="Enter prize and benefit details"
+                    rows="6"
+                  />
+                </div>
+
+                {/* DATE */}
+
+                <div className={styles.formGroup}>
+                  <label>Date</label>
+
+                  <input
+                    type="date"
+                    name="date"
+                    value={prize.date}
+                    onChange={(e) => handlePrizeChange(index, e)}
+                  />
+                </div>
+
+                {/* RULES */}
+
+                <div className={styles.formGroup}>
+                  <label>Rules / Benefits</label>
+
+                  <textarea
+                    name="rules"
+                    value={prize.rules}
+                    onChange={(e) => handlePrizeChange(index, e)}
+                    placeholder="Enter one item per line"
+                    rows="6"
+                  />
+                </div>
+
+                {/* SHOWING */}
+
+                <div className={styles.formGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="showing"
+                      checked={prize.showing}
+                      onChange={(e) => handlePrizeChange(index, e)}
+                    />
+                    Showing
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* =================================================
+              SUBMIT
+          ================================================= */}
 
           <button
             type="submit"
@@ -366,15 +753,11 @@ const CreateTournament = () => {
             {loading ? "Creating..." : "Create Tournament"}
           </button>
 
-          {/* =================================
-              SUCCESS MESSAGE
-          ================================= */}
+          {/* SUCCESS */}
 
           {message && <p className={styles.success}>{message}</p>}
 
-          {/* =================================
-              ERROR MESSAGE
-          ================================= */}
+          {/* ERROR */}
 
           {error && <p className={styles.error}>{error}</p>}
         </form>
