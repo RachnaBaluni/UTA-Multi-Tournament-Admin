@@ -200,7 +200,7 @@ const EventModal = ({ event, tournamentId, onClose }) => {
               required
             />
           </div>
-          <div className={styles.formGroup}>
+          {/* <div className={styles.formGroup}>
             <label>Date</label>
             <input
               type="date"
@@ -209,7 +209,7 @@ const EventModal = ({ event, tournamentId, onClose }) => {
               onChange={handleChange}
               required
             />
-          </div>
+          </div> */}
           <div className={styles.formGroup}>
             <label>Rules (comma-separated)</label>
             <input
