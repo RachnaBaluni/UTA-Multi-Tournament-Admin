@@ -356,37 +356,6 @@ const EditTournament = () => {
               </div>
 
               {/* =================================
-                  ENTRY & PARTICIPATION RULES
-              ================================= */}
-
-              <div className={styles.formGroup}>
-                <label>Entry & Participation Rules</label>
-
-                <textarea
-                  value={(editingTournament.entryParticipationRules || []).join(
-                    "\n",
-                  )}
-                  onChange={(e) => {
-                    const rules = e.target.value
-                      .split("\n")
-                      .map((rule) => rule.trim())
-                      .filter((rule) => rule !== "");
-
-                    setEditingTournament({
-                      ...editingTournament,
-                      entryParticipationRules: rules,
-                    });
-                  }}
-                  placeholder={`Enter one rule per line
-Example:
-Entry Fee: ₹1000
-Singles participation only
-Players must register before the deadline`}
-                  rows="6"
-                />
-              </div>
-
-              {/* =================================
                   TOURNAMENT DIRECTOR
               ================================= */}
 
