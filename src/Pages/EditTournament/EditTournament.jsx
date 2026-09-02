@@ -488,7 +488,12 @@ const EditTournament = () => {
             .map((rule) => rule.trim())
             .filter((rule) => rule !== ""),
           showing: venue.showing,
-          mapLink: venue.mapLink.trim(),
+          mapLink: venue.mapLink
+            .trim()
+            .replace(
+              /^<iframe[^>]*src=["']([^"']+)["'][^>]*><\/iframe>$/i,
+              "$1",
+            ),
         };
 
         if (venue._id) {
