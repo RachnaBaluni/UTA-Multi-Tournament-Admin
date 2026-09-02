@@ -497,10 +497,18 @@ const EditTournament = () => {
         };
 
         if (venue._id) {
+          console.log("========== SENDING VENUE PUT ==========");
+          console.log("URL:", `${BACKEND}/api/venue/${venue._id}`);
+          console.log("PAYLOAD:", venuePayload);
+
           await axios.put(`${BACKEND}/api/venue/${venue._id}`, venuePayload, {
             withCredentials: true,
           });
         } else {
+          console.log("========== SENDING VENUE POST ==========");
+          console.log("URL:", `${BACKEND}/api/venue`);
+          console.log("PAYLOAD:", venuePayload);
+
           await axios.post(`${BACKEND}/api/venue`, venuePayload, {
             withCredentials: true,
           });
