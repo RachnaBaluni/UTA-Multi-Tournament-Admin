@@ -26,6 +26,7 @@ const CreateTournament = () => {
     date: "",
     rules: "",
     showing: true,
+    mapLink: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -275,6 +276,7 @@ const CreateTournament = () => {
             .map((rule) => rule.trim())
             .filter((rule) => rule !== ""),
           showing: venue.showing,
+          mapLink: venue.mapLink.trim(),
         },
         {
           withCredentials: true,

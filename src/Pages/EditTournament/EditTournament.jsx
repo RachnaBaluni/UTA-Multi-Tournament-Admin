@@ -19,6 +19,7 @@ const EditTournament = () => {
     date: "",
     rules: "",
     showing: true,
+    mapLink: "",
   });
 
   const BACKEND = import.meta.env.VITE_APP_BACKEND_URL;
@@ -147,6 +148,7 @@ const EditTournament = () => {
               ? firstVenue.rules.join("\n")
               : firstVenue.rules || "",
             showing: firstVenue.showing !== false,
+            mapLink: firstVenue.mapLink || "",
           });
         } else {
           setVenue({
@@ -482,6 +484,7 @@ const EditTournament = () => {
             .map((rule) => rule.trim())
             .filter((rule) => rule !== ""),
           showing: venue.showing,
+          mapLink: venue.mapLink.trim(),
         };
 
         if (venue._id) {
@@ -1109,7 +1112,17 @@ const EditTournament = () => {
                   rows="5"
                 />
               </div>
+              <div className={styles.formGroup}>
+                <label>Map URL</label>
 
+                <input
+                  type="text"
+                  name="mapLink"
+                  value={venue.mapLink}
+                  onChange={handleVenueChange}
+                  placeholder="Enter Google Maps embed URL"
+                />
+              </div>
               <div className={styles.checkboxRow}>
                 <input
                   type="checkbox"
