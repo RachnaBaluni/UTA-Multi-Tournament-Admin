@@ -13,6 +13,13 @@ const EditTournament = () => {
 
   const [tournamentDetails, setTournamentDetails] = useState([]);
   const [prizesBenefits, setPrizesBenefits] = useState([]);
+  const [venue, setVenue] = useState({
+    key: "",
+    value: "",
+    date: "",
+    rules: "",
+    showing: true,
+  });
 
   const BACKEND = import.meta.env.VITE_APP_BACKEND_URL;
 
@@ -117,7 +124,61 @@ const EditTournament = () => {
       setPrizesBenefits([]);
     }
   };
+  const fetchVenue = async (tournamentId) => {
+    try {
+      const response = await axios.get(
+        `${BACKEND}/api/venue?tournamentId=${tournamentId}`,
+      );
 
+      if (response.data.success) {
+        const venues = response.data.data || [];
+
+        if (venues.length > 0) {
+          const firstVenue = venues[0];
+
+          setVenue({
+            _id: firstVenue._id,
+            key: firstVenue.key || "",
+            value: firstVenue.value || "",
+            date: firstVenue.date
+              ? new Date(firstVenue.date).toISOString().slice(0, 10)
+              : "",
+            rules: Array.isArray(firstVenue.rules)
+              ? firstVenue.rules.join("\n")
+              : firstVenue.rules || "",
+            showing: firstVenue.showing !== false,
+          });
+        } else {
+          setVenue({
+            key: "",
+            value: "",
+            date: "",
+            rules: "",
+            showing: true,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching venue:", error);
+
+      setVenue({
+        key: "",
+        value: "",
+        date: "",
+        rules: "",
+        showing: true,
+      });
+    }
+  };
+
+  const handleVenueChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setVenue((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
   // =========================================================
   // OPEN EDIT FORM
   // =========================================================
@@ -138,6 +199,7 @@ const EditTournament = () => {
       await Promise.all([
         fetchTournamentDetails(tournament._id),
         fetchPrizesBenefits(tournament._id),
+        fetchVenue(tournament._id),
       ]);
     } catch (error) {
       console.error("Error opening tournament:", error);
@@ -405,6 +467,33 @@ const EditTournament = () => {
         }
       }
 
+      // =====================================================
+      // 4. UPDATE / CREATE VENUE
+      // =====================================================
+
+      if (venue.key.trim() && venue.value.trim()) {
+        const venuePayload = {
+          tournamentId: editingTournament._id,
+          key: venue.key.trim(),
+          value: venue.value.trim(),
+          date: venue.date || new Date(),
+          rules: venue.rules
+            .split("\n")
+            .map((rule) => rule.trim())
+            .filter((rule) => rule !== ""),
+          showing: venue.showing,
+        };
+
+        if (venue._id) {
+          await axios.put(`${BACKEND}/api/venue/${venue._id}`, venuePayload, {
+            withCredentials: true,
+          });
+        } else {
+          await axios.post(`${BACKEND}/api/venue`, venuePayload, {
+            withCredentials: true,
+          });
+        }
+      }
       // =====================================================
       // SUCCESS
       // =====================================================
@@ -961,6 +1050,78 @@ const EditTournament = () => {
             ))}
           </div>
 
+          {/* =================================================
+    VENUE
+================================================= */}
+
+          <div className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h2>Venue</h2>
+                <p>Manage venue information for this tournament</p>
+              </div>
+            </div>
+
+            <div className={styles.detailBox}>
+              <div className={styles.formGroup}>
+                <label>Venue Name</label>
+
+                <input
+                  type="text"
+                  name="key"
+                  value={venue.key}
+                  onChange={handleVenueChange}
+                  placeholder="Enter venue name"
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Venue Details</label>
+
+                <textarea
+                  name="value"
+                  value={venue.value}
+                  onChange={handleVenueChange}
+                  placeholder="Enter venue details"
+                  rows="5"
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Venue Date</label>
+
+                <input
+                  type="date"
+                  name="date"
+                  value={venue.date}
+                  onChange={handleVenueChange}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Rules</label>
+
+                <textarea
+                  name="rules"
+                  value={venue.rules}
+                  onChange={handleVenueChange}
+                  placeholder="Enter one rule per line"
+                  rows="5"
+                />
+              </div>
+
+              <div className={styles.checkboxRow}>
+                <input
+                  type="checkbox"
+                  name="showing"
+                  checked={venue.showing}
+                  onChange={handleVenueChange}
+                />
+
+                <label>Showing</label>
+              </div>
+            </div>
+          </div>
           {/* =================================================
               ACTION BUTTONS
           ================================================= */}
