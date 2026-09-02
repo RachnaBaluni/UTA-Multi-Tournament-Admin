@@ -468,7 +468,11 @@ const EditTournament = () => {
           });
         }
       }
-
+      console.log("========== VENUE UPDATE DEBUG ==========");
+      console.log("VENUE STATE:", venue);
+      console.log("VENUE ID:", venue._id);
+      console.log("TOURNAMENT ID:", editingTournament._id);
+      console.log("========================================");
       // =====================================================
       // 4. UPDATE / CREATE VENUE
       // =====================================================
