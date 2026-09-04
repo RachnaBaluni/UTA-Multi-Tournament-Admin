@@ -321,6 +321,8 @@ const CreateTournament = () => {
 
       const token = localStorage.getItem("token");
 
+      console.log("TOURNAMENT TOKEN:", token);
+
       const tournamentResponse = await axios.post(
         `${BACKEND}/api/tournaments`,
         tournamentPayload,
