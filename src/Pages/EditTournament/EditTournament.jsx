@@ -13,6 +13,7 @@ const EditTournament = () => {
 
   const [tournamentDetails, setTournamentDetails] = useState([]);
   const [prizesBenefits, setPrizesBenefits] = useState([]);
+
   const [venue, setVenue] = useState({
     key: "",
     value: "",
@@ -40,7 +41,7 @@ const EditTournament = () => {
       const response = await axios.get(`${BACKEND}/api/tournaments`);
 
       if (response.data.success) {
-        setTournaments(response.data.data);
+        setTournaments(response.data.data || []);
       }
     } catch (error) {
       console.error("Error fetching tournaments:", error);
@@ -84,7 +85,6 @@ const EditTournament = () => {
       }
     } catch (error) {
       console.error("Error fetching tournament details:", error);
-
       setTournamentDetails([]);
     }
   };
@@ -121,10 +121,14 @@ const EditTournament = () => {
       }
     } catch (error) {
       console.error("Error fetching prizes and benefits:", error);
-
       setPrizesBenefits([]);
     }
   };
+
+  // =========================================================
+  // FETCH VENUE
+  // =========================================================
+
   const fetchVenue = async (tournamentId) => {
     try {
       const response = await axios.get(
@@ -157,6 +161,7 @@ const EditTournament = () => {
             date: "",
             rules: "",
             showing: true,
+            mapLink: "",
           });
         }
       }
@@ -169,9 +174,14 @@ const EditTournament = () => {
         date: "",
         rules: "",
         showing: true,
+        mapLink: "",
       });
     }
   };
+
+  // =========================================================
+  // VENUE CHANGE
+  // =========================================================
 
   const handleVenueChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -181,6 +191,7 @@ const EditTournament = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+
   // =========================================================
   // OPEN EDIT FORM
   // =========================================================
@@ -190,19 +201,52 @@ const EditTournament = () => {
       setError("");
       setMessage("");
 
+      const tournamentType = tournament.type || "normal";
+
       setEditingTournament({
         ...tournament,
-        type: "normal",
+        type: tournamentType,
+        date: tournament.date
+          ? new Date(tournament.date).toISOString().slice(0, 10)
+          : "",
+        startDate: tournament.startDate
+          ? new Date(tournament.startDate).toISOString().slice(0, 10)
+          : "",
+        endDate: tournament.endDate
+          ? new Date(tournament.endDate).toISOString().slice(0, 10)
+          : "",
+        registrationStartDate: tournament.registrationStartDate
+          ? new Date(tournament.registrationStartDate)
+              .toISOString()
+              .slice(0, 10)
+          : "",
+        registrationEndDate: tournament.registrationEndDate
+          ? new Date(tournament.registrationEndDate).toISOString().slice(0, 10)
+          : "",
       });
 
       setTournamentDetails([]);
       setPrizesBenefits([]);
 
-      await Promise.all([
-        fetchTournamentDetails(tournament._id),
-        fetchPrizesBenefits(tournament._id),
-        fetchVenue(tournament._id),
-      ]);
+      if (tournamentType === "normal") {
+        await Promise.all([
+          fetchTournamentDetails(tournament._id),
+          fetchPrizesBenefits(tournament._id),
+          fetchVenue(tournament._id),
+        ]);
+      } else {
+        setTournamentDetails([]);
+        setPrizesBenefits([]);
+
+        setVenue({
+          key: "",
+          value: "",
+          date: "",
+          rules: "",
+          showing: true,
+          mapLink: "",
+        });
+      }
     } catch (error) {
       console.error("Error opening tournament:", error);
 
@@ -332,13 +376,50 @@ const EditTournament = () => {
       return;
     }
 
+    const isDisplay = editingTournament.type === "display";
+
     try {
       setSaving(true);
       setError("");
       setMessage("");
 
       // =====================================================
-      // DATE VALIDATION
+      // DISPLAY TOURNAMENT UPDATE
+      // =====================================================
+
+      if (isDisplay) {
+        const tournamentResponse = await axios.put(
+          `${BACKEND}/api/tournaments/${editingTournament._id}`,
+          {
+            name: editingTournament.name,
+            description: editingTournament.description,
+            location: editingTournament.location,
+            organizer: editingTournament.organizer,
+            date: editingTournament.date,
+            type: "display",
+          },
+          {
+            withCredentials: true,
+          },
+        );
+
+        if (!tournamentResponse.data.success) {
+          throw new Error("Display tournament update failed.");
+        }
+
+        setMessage("Display Tournament updated successfully.");
+
+        setEditingTournament(null);
+        setTournamentDetails([]);
+        setPrizesBenefits([]);
+
+        await fetchTournaments();
+
+        return;
+      }
+
+      // =====================================================
+      // MASTER TOURNAMENT DATE VALIDATION
       // =====================================================
 
       if (
@@ -468,11 +549,7 @@ const EditTournament = () => {
           });
         }
       }
-      console.log("========== VENUE UPDATE DEBUG ==========");
-      console.log("VENUE STATE:", venue);
-      console.log("VENUE ID:", venue._id);
-      console.log("TOURNAMENT ID:", editingTournament._id);
-      console.log("========================================");
+
       // =====================================================
       // 4. UPDATE / CREATE VENUE
       // =====================================================
@@ -497,23 +574,16 @@ const EditTournament = () => {
         };
 
         if (venue._id) {
-          console.log("========== SENDING VENUE PUT ==========");
-          console.log("URL:", `${BACKEND}/api/venue/${venue._id}`);
-          console.log("PAYLOAD:", venuePayload);
-
           await axios.put(`${BACKEND}/api/venue/${venue._id}`, venuePayload, {
             withCredentials: true,
           });
         } else {
-          console.log("========== SENDING VENUE POST ==========");
-          console.log("URL:", `${BACKEND}/api/venue`);
-          console.log("PAYLOAD:", venuePayload);
-
           await axios.post(`${BACKEND}/api/venue`, venuePayload, {
             withCredentials: true,
           });
         }
       }
+
       // =====================================================
       // SUCCESS
       // =====================================================
@@ -585,6 +655,8 @@ const EditTournament = () => {
   // RENDER
   // =========================================================
 
+  const isDisplay = editingTournament?.type === "display";
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Edit Tournament</h1>
@@ -602,7 +674,12 @@ const EditTournament = () => {
           <div className={styles.formGroup}>
             <label>Tournament Type</label>
 
-            <input type="text" value="Master Tournament" disabled readOnly />
+            <input
+              type="text"
+              value={isDisplay ? "Display Tournament" : "Master Tournament"}
+              disabled
+              readOnly
+            />
           </div>
 
           {/* =================================================
@@ -693,465 +770,476 @@ const EditTournament = () => {
               />
             </div>
 
-            {/* TOURNAMENT DATES */}
+            {/* DISPLAY TOURNAMENT DATE */}
 
-            <div className={styles.formRow}>
+            {isDisplay ? (
               <div className={styles.formGroup}>
-                <label>Tournament Start Date</label>
+                <label>Date</label>
 
                 <input
                   type="date"
-                  value={
-                    editingTournament.startDate
-                      ? new Date(editingTournament.startDate)
-                          .toISOString()
-                          .slice(0, 10)
-                      : ""
-                  }
+                  value={editingTournament.date || ""}
                   onChange={(e) =>
                     setEditingTournament({
                       ...editingTournament,
-                      startDate: e.target.value,
+                      date: e.target.value,
                     })
                   }
                   required
                 />
               </div>
+            ) : (
+              <>
+                {/* MASTER TOURNAMENT DATES */}
 
-              <div className={styles.formGroup}>
-                <label>Tournament End Date</label>
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label>Tournament Start Date</label>
 
-                <input
-                  type="date"
-                  value={
-                    editingTournament.endDate
-                      ? new Date(editingTournament.endDate)
-                          .toISOString()
-                          .slice(0, 10)
-                      : ""
-                  }
-                  onChange={(e) =>
-                    setEditingTournament({
-                      ...editingTournament,
-                      endDate: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-            </div>
+                    <input
+                      type="date"
+                      value={editingTournament.startDate || ""}
+                      onChange={(e) =>
+                        setEditingTournament({
+                          ...editingTournament,
+                          startDate: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
 
-            {/* REGISTRATION DATES */}
+                  <div className={styles.formGroup}>
+                    <label>Tournament End Date</label>
 
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>Registration Start Date</label>
+                    <input
+                      type="date"
+                      value={editingTournament.endDate || ""}
+                      onChange={(e) =>
+                        setEditingTournament({
+                          ...editingTournament,
+                          endDate: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+                </div>
 
-                <input
-                  type="date"
-                  value={
-                    editingTournament.registrationStartDate
-                      ? new Date(editingTournament.registrationStartDate)
-                          .toISOString()
-                          .slice(0, 10)
-                      : ""
-                  }
-                  onChange={(e) =>
-                    setEditingTournament({
-                      ...editingTournament,
-                      registrationStartDate: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
+                {/* REGISTRATION DATES */}
 
-              <div className={styles.formGroup}>
-                <label>Registration End Date</label>
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label>Registration Start Date</label>
 
-                <input
-                  type="date"
-                  value={
-                    editingTournament.registrationEndDate
-                      ? new Date(editingTournament.registrationEndDate)
-                          .toISOString()
-                          .slice(0, 10)
-                      : ""
-                  }
-                  onChange={(e) =>
-                    setEditingTournament({
-                      ...editingTournament,
-                      registrationEndDate: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-            </div>
+                    <input
+                      type="date"
+                      value={editingTournament.registrationStartDate || ""}
+                      onChange={(e) =>
+                        setEditingTournament({
+                          ...editingTournament,
+                          registrationStartDate: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
 
-            {/* DIRECTOR */}
+                  <div className={styles.formGroup}>
+                    <label>Registration End Date</label>
 
-            <div className={styles.formGroup}>
-              <label>Tournament Director</label>
+                    <input
+                      type="date"
+                      value={editingTournament.registrationEndDate || ""}
+                      onChange={(e) =>
+                        setEditingTournament({
+                          ...editingTournament,
+                          registrationEndDate: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+                </div>
 
-              <input
-                type="text"
-                value={editingTournament.director || ""}
-                onChange={(e) =>
-                  setEditingTournament({
-                    ...editingTournament,
-                    director: e.target.value,
-                  })
-                }
-                placeholder="Enter tournament director"
-                required
-              />
-            </div>
+                {/* DIRECTOR */}
 
-            {/* DIRECTOR PHONE */}
+                <div className={styles.formGroup}>
+                  <label>Tournament Director</label>
 
-            <div className={styles.formGroup}>
-              <label>Director Phone Number</label>
+                  <input
+                    type="text"
+                    value={editingTournament.director || ""}
+                    onChange={(e) =>
+                      setEditingTournament({
+                        ...editingTournament,
+                        director: e.target.value,
+                      })
+                    }
+                    placeholder="Enter tournament director"
+                    required
+                  />
+                </div>
 
-              <input
-                type="tel"
-                value={editingTournament.directorPhone || ""}
-                onChange={(e) =>
-                  setEditingTournament({
-                    ...editingTournament,
-                    directorPhone: e.target.value,
-                  })
-                }
-                placeholder="Enter 10 digit phone number"
-                pattern="[0-9]{10}"
-                maxLength="10"
-                required
-              />
-            </div>
+                {/* DIRECTOR PHONE */}
 
-            {/* STATUS */}
+                <div className={styles.formGroup}>
+                  <label>Director Phone Number</label>
 
-            <div className={styles.formGroup}>
-              <label>Status</label>
+                  <input
+                    type="tel"
+                    value={editingTournament.directorPhone || ""}
+                    onChange={(e) =>
+                      setEditingTournament({
+                        ...editingTournament,
+                        directorPhone: e.target.value,
+                      })
+                    }
+                    placeholder="Enter 10 digit phone number"
+                    pattern="[0-9]{10}"
+                    maxLength="10"
+                    required
+                  />
+                </div>
 
-              <select
-                value={editingTournament.status || "Upcoming"}
-                onChange={(e) =>
-                  setEditingTournament({
-                    ...editingTournament,
-                    status: e.target.value,
-                  })
-                }
-              >
-                <option value="Upcoming">Upcoming</option>
-                <option value="Active">Active</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
+                {/* STATUS */}
+
+                <div className={styles.formGroup}>
+                  <label>Status</label>
+
+                  <select
+                    value={editingTournament.status || "Upcoming"}
+                    onChange={(e) =>
+                      setEditingTournament({
+                        ...editingTournament,
+                        status: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Active">Active</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+              </>
+            )}
           </div>
 
           {/* =================================================
-              TOURNAMENT DETAILS
+              MASTER TOURNAMENT ONLY SECTIONS
           ================================================= */}
 
-          <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <div>
-                <h2>Tournament Details</h2>
-                <p>Add all tournament related details</p>
-              </div>
+          {!isDisplay && (
+            <>
+              {/* =================================================
+                  TOURNAMENT DETAILS
+              ================================================= */}
 
-              <button
-                type="button"
-                className={styles.addButton}
-                onClick={addTournamentDetail}
-              >
-                + Add Tournament Detail
-              </button>
-            </div>
-
-            {tournamentDetails.length === 0 && (
-              <div className={styles.emptySection}>
-                <p>No tournament details added yet.</p>
-
-                <span>Click on "+ Add Tournament Detail" to add details.</span>
-              </div>
-            )}
-
-            {tournamentDetails.map((detail, index) => (
-              <div className={styles.detailBox} key={detail._id || index}>
-                <div className={styles.detailHeader}>
-                  <h3>Tournament Detail {index + 1}</h3>
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <div>
+                    <h2>Tournament Details</h2>
+                    <p>Add all tournament related details</p>
+                  </div>
 
                   <button
                     type="button"
-                    className={styles.deleteButton}
-                    onClick={() => removeTournamentDetail(index)}
+                    className={styles.addButton}
+                    onClick={addTournamentDetail}
                   >
-                    Remove
+                    + Add Tournament Detail
                   </button>
                 </div>
 
-                <div className={styles.formGroup}>
-                  <label>Key</label>
+                {tournamentDetails.length === 0 && (
+                  <div className={styles.emptySection}>
+                    <p>No tournament details added yet.</p>
 
-                  <input
-                    type="text"
-                    name="key"
-                    value={detail.key}
-                    onChange={(e) => handleDetailChange(index, e)}
-                    placeholder="Example: entry_rules"
-                  />
-                </div>
+                    <span>
+                      Click on "+ Add Tournament Detail" to add details.
+                    </span>
+                  </div>
+                )}
 
-                <div className={styles.formGroup}>
-                  <label>Title</label>
+                {tournamentDetails.map((detail, index) => (
+                  <div className={styles.detailBox} key={detail._id || index}>
+                    <div className={styles.detailHeader}>
+                      <h3>Tournament Detail {index + 1}</h3>
 
-                  <input
-                    type="text"
-                    name="title"
-                    value={detail.title}
-                    onChange={(e) => handleDetailChange(index, e)}
-                    placeholder="Example: Entry Rules"
-                  />
-                </div>
+                      <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={() => removeTournamentDetail(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
 
-                <div className={styles.formGroup}>
-                  <label>Value</label>
+                    <div className={styles.formGroup}>
+                      <label>Key</label>
 
-                  <textarea
-                    name="value"
-                    value={detail.value}
-                    onChange={(e) => handleDetailChange(index, e)}
-                    placeholder="Enter tournament detail"
-                    rows="5"
-                  />
-                </div>
+                      <input
+                        type="text"
+                        name="key"
+                        value={detail.key}
+                        onChange={(e) => handleDetailChange(index, e)}
+                        placeholder="Example: entry_rules"
+                      />
+                    </div>
 
-                <div className={styles.formGroup}>
-                  <label>Date</label>
+                    <div className={styles.formGroup}>
+                      <label>Title</label>
 
-                  <input
-                    type="date"
-                    name="date"
-                    value={detail.date}
-                    onChange={(e) => handleDetailChange(index, e)}
-                  />
-                </div>
+                      <input
+                        type="text"
+                        name="title"
+                        value={detail.title}
+                        onChange={(e) => handleDetailChange(index, e)}
+                        placeholder="Example: Entry Rules"
+                      />
+                    </div>
 
-                <div className={styles.formGroup}>
-                  <label>Rules</label>
+                    <div className={styles.formGroup}>
+                      <label>Value</label>
 
-                  <textarea
-                    name="rules"
-                    value={detail.rules}
-                    onChange={(e) => handleDetailChange(index, e)}
-                    placeholder="Enter one rule per line"
-                    rows="5"
-                  />
-                </div>
+                      <textarea
+                        name="value"
+                        value={detail.value}
+                        onChange={(e) => handleDetailChange(index, e)}
+                        placeholder="Enter tournament detail"
+                        rows="5"
+                      />
+                    </div>
 
-                <div className={styles.checkboxRow}>
-                  <input
-                    type="checkbox"
-                    name="showing"
-                    checked={detail.showing}
-                    onChange={(e) => handleDetailChange(index, e)}
-                  />
+                    <div className={styles.formGroup}>
+                      <label>Date</label>
 
-                  <label>Showing</label>
-                </div>
+                      <input
+                        type="date"
+                        name="date"
+                        value={detail.date}
+                        onChange={(e) => handleDetailChange(index, e)}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label>Rules</label>
+
+                      <textarea
+                        name="rules"
+                        value={detail.rules}
+                        onChange={(e) => handleDetailChange(index, e)}
+                        placeholder="Enter one rule per line"
+                        rows="5"
+                      />
+                    </div>
+
+                    <div className={styles.checkboxRow}>
+                      <input
+                        type="checkbox"
+                        name="showing"
+                        checked={detail.showing}
+                        onChange={(e) => handleDetailChange(index, e)}
+                      />
+
+                      <label>Showing</label>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* =================================================
-              PRIZES & BENEFITS
-          ================================================= */}
+              {/* =================================================
+                  PRIZES & BENEFITS
+              ================================================= */}
 
-          <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <div>
-                <h2>Prizes & Benefits</h2>
-                <p>Add prize and benefits information</p>
-              </div>
-
-              <button
-                type="button"
-                className={styles.addButton}
-                onClick={addPrizeBenefit}
-              >
-                + Add Prize & Benefit
-              </button>
-            </div>
-
-            {prizesBenefits.length === 0 && (
-              <div className={styles.emptySection}>
-                <p>No prizes or benefits added yet.</p>
-
-                <span>
-                  Click on "+ Add Prize & Benefit" to add information.
-                </span>
-              </div>
-            )}
-
-            {prizesBenefits.map((prize, index) => (
-              <div className={styles.detailBox} key={prize._id || index}>
-                <div className={styles.detailHeader}>
-                  <h3>Prize & Benefit {index + 1}</h3>
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <div>
+                    <h2>Prizes & Benefits</h2>
+                    <p>Add prize and benefits information</p>
+                  </div>
 
                   <button
                     type="button"
-                    className={styles.deleteButton}
-                    onClick={() => removePrizeBenefit(index)}
+                    className={styles.addButton}
+                    onClick={addPrizeBenefit}
                   >
-                    Remove
+                    + Add Prize & Benefit
                   </button>
                 </div>
 
-                <div className={styles.formGroup}>
-                  <label>Key</label>
+                {prizesBenefits.length === 0 && (
+                  <div className={styles.emptySection}>
+                    <p>No prizes or benefits added yet.</p>
 
-                  <input
-                    type="text"
-                    name="key"
-                    value={prize.key}
-                    onChange={(e) => handlePrizeChange(index, e)}
-                    placeholder="Example: prize_money"
-                  />
+                    <span>
+                      Click on "+ Add Prize & Benefit" to add information.
+                    </span>
+                  </div>
+                )}
+
+                {prizesBenefits.map((prize, index) => (
+                  <div className={styles.detailBox} key={prize._id || index}>
+                    <div className={styles.detailHeader}>
+                      <h3>Prize & Benefit {index + 1}</h3>
+
+                      <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={() => removePrizeBenefit(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label>Key</label>
+
+                      <input
+                        type="text"
+                        name="key"
+                        value={prize.key}
+                        onChange={(e) => handlePrizeChange(index, e)}
+                        placeholder="Example: prize_money"
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label>Prize & Benefit Details</label>
+
+                      <textarea
+                        name="value"
+                        value={prize.value}
+                        onChange={(e) => handlePrizeChange(index, e)}
+                        placeholder="Enter prize and benefit details"
+                        rows="6"
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label>Date</label>
+
+                      <input
+                        type="date"
+                        name="date"
+                        value={prize.date}
+                        onChange={(e) => handlePrizeChange(index, e)}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label>Rules / Benefits</label>
+
+                      <textarea
+                        name="rules"
+                        value={prize.rules}
+                        onChange={(e) => handlePrizeChange(index, e)}
+                        placeholder="Enter one item per line"
+                        rows="6"
+                      />
+                    </div>
+
+                    <div className={styles.checkboxRow}>
+                      <input
+                        type="checkbox"
+                        name="showing"
+                        checked={prize.showing}
+                        onChange={(e) => handlePrizeChange(index, e)}
+                      />
+
+                      <label>Showing</label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* =================================================
+                  VENUE
+              ================================================= */}
+
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <div>
+                    <h2>Venue</h2>
+                    <p>Manage venue information for this tournament</p>
+                  </div>
                 </div>
 
-                <div className={styles.formGroup}>
-                  <label>Prize & Benefit Details</label>
+                <div className={styles.detailBox}>
+                  <div className={styles.formGroup}>
+                    <label>Venue Name</label>
 
-                  <textarea
-                    name="value"
-                    value={prize.value}
-                    onChange={(e) => handlePrizeChange(index, e)}
-                    placeholder="Enter prize and benefit details"
-                    rows="6"
-                  />
+                    <input
+                      type="text"
+                      name="key"
+                      value={venue.key}
+                      onChange={handleVenueChange}
+                      placeholder="Enter venue name"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>Venue Details</label>
+
+                    <textarea
+                      name="value"
+                      value={venue.value}
+                      onChange={handleVenueChange}
+                      placeholder="Enter venue details"
+                      rows="5"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>Venue Date</label>
+
+                    <input
+                      type="date"
+                      name="date"
+                      value={venue.date}
+                      onChange={handleVenueChange}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>Rules</label>
+
+                    <textarea
+                      name="rules"
+                      value={venue.rules}
+                      onChange={handleVenueChange}
+                      placeholder="Enter one rule per line"
+                      rows="5"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>Map URL</label>
+
+                    <input
+                      type="text"
+                      name="mapLink"
+                      value={venue.mapLink}
+                      onChange={handleVenueChange}
+                      placeholder="Enter Google Maps embed URL"
+                    />
+                  </div>
+
+                  <div className={styles.checkboxRow}>
+                    <input
+                      type="checkbox"
+                      name="showing"
+                      checked={venue.showing}
+                      onChange={handleVenueChange}
+                    />
+
+                    <label>Showing</label>
+                  </div>
                 </div>
-
-                <div className={styles.formGroup}>
-                  <label>Date</label>
-
-                  <input
-                    type="date"
-                    name="date"
-                    value={prize.date}
-                    onChange={(e) => handlePrizeChange(index, e)}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Rules / Benefits</label>
-
-                  <textarea
-                    name="rules"
-                    value={prize.rules}
-                    onChange={(e) => handlePrizeChange(index, e)}
-                    placeholder="Enter one item per line"
-                    rows="6"
-                  />
-                </div>
-
-                <div className={styles.checkboxRow}>
-                  <input
-                    type="checkbox"
-                    name="showing"
-                    checked={prize.showing}
-                    onChange={(e) => handlePrizeChange(index, e)}
-                  />
-
-                  <label>Showing</label>
-                </div>
               </div>
-            ))}
-          </div>
+            </>
+          )}
 
-          {/* =================================================
-    VENUE
-================================================= */}
-
-          <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <div>
-                <h2>Venue</h2>
-                <p>Manage venue information for this tournament</p>
-              </div>
-            </div>
-
-            <div className={styles.detailBox}>
-              <div className={styles.formGroup}>
-                <label>Venue Name</label>
-
-                <input
-                  type="text"
-                  name="key"
-                  value={venue.key}
-                  onChange={handleVenueChange}
-                  placeholder="Enter venue name"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Venue Details</label>
-
-                <textarea
-                  name="value"
-                  value={venue.value}
-                  onChange={handleVenueChange}
-                  placeholder="Enter venue details"
-                  rows="5"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Venue Date</label>
-
-                <input
-                  type="date"
-                  name="date"
-                  value={venue.date}
-                  onChange={handleVenueChange}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Rules</label>
-
-                <textarea
-                  name="rules"
-                  value={venue.rules}
-                  onChange={handleVenueChange}
-                  placeholder="Enter one rule per line"
-                  rows="5"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Map URL</label>
-
-                <input
-                  type="text"
-                  name="mapLink"
-                  value={venue.mapLink}
-                  onChange={handleVenueChange}
-                  placeholder="Enter Google Maps embed URL"
-                />
-              </div>
-              <div className={styles.checkboxRow}>
-                <input
-                  type="checkbox"
-                  name="showing"
-                  checked={venue.showing}
-                  onChange={handleVenueChange}
-                />
-
-                <label>Showing</label>
-              </div>
-            </div>
-          </div>
           {/* =================================================
               ACTION BUTTONS
           ================================================= */}
@@ -1216,63 +1304,82 @@ const EditTournament = () => {
 
       {!loading && !editingTournament && tournaments.length > 0 && (
         <div className={styles.tournamentList}>
-          {tournaments.map((tournament) => (
-            <div className={styles.tournamentCard} key={tournament._id}>
-              <div>
-                <h2>{tournament.name}</h2>
+          {tournaments.map((tournament) => {
+            const tournamentIsDisplay = tournament.type === "display";
 
-                <p>
-                  <strong>Type:</strong> Master Tournament
-                </p>
+            return (
+              <div className={styles.tournamentCard} key={tournament._id}>
+                <div>
+                  <h2>{tournament.name}</h2>
 
-                <p>
-                  <strong>Description:</strong> {tournament.description || "-"}
-                </p>
+                  <p>
+                    <strong>Type:</strong>{" "}
+                    {tournamentIsDisplay
+                      ? "Display Tournament"
+                      : "Master Tournament"}
+                  </p>
 
-                <p>
-                  <strong>Location:</strong> {tournament.location || "-"}
-                </p>
+                  <p>
+                    <strong>Description:</strong>{" "}
+                    {tournament.description || "-"}
+                  </p>
 
-                <p>
-                  <strong>Organizer:</strong> {tournament.organizer || "-"}
-                </p>
+                  <p>
+                    <strong>Location:</strong> {tournament.location || "-"}
+                  </p>
 
-                <p>
-                  <strong>Start:</strong>{" "}
-                  {tournament.startDate
-                    ? new Date(tournament.startDate).toLocaleDateString()
-                    : "-"}
-                </p>
+                  <p>
+                    <strong>Organizer:</strong> {tournament.organizer || "-"}
+                  </p>
 
-                <p>
-                  <strong>End:</strong>{" "}
-                  {tournament.endDate
-                    ? new Date(tournament.endDate).toLocaleDateString()
-                    : "-"}
-                </p>
+                  {tournamentIsDisplay ? (
+                    <p>
+                      <strong>Date:</strong>{" "}
+                      {tournament.date
+                        ? new Date(tournament.date).toLocaleDateString()
+                        : "-"}
+                    </p>
+                  ) : (
+                    <>
+                      <p>
+                        <strong>Start:</strong>{" "}
+                        {tournament.startDate
+                          ? new Date(tournament.startDate).toLocaleDateString()
+                          : "-"}
+                      </p>
 
-                <p>
-                  <strong>Director:</strong> {tournament.director || "-"}
-                </p>
+                      <p>
+                        <strong>End:</strong>{" "}
+                        {tournament.endDate
+                          ? new Date(tournament.endDate).toLocaleDateString()
+                          : "-"}
+                      </p>
 
-                <p>
-                  <strong>Director Phone:</strong>{" "}
-                  {tournament.directorPhone || "-"}
-                </p>
+                      <p>
+                        <strong>Director:</strong> {tournament.director || "-"}
+                      </p>
 
-                <p>
-                  <strong>Status:</strong> {tournament.status || "-"}
-                </p>
+                      <p>
+                        <strong>Director Phone:</strong>{" "}
+                        {tournament.directorPhone || "-"}
+                      </p>
+
+                      <p>
+                        <strong>Status:</strong> {tournament.status || "-"}
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                <button
+                  className={styles.editButton}
+                  onClick={() => handleEdit(tournament)}
+                >
+                  Edit
+                </button>
               </div>
-
-              <button
-                className={styles.editButton}
-                onClick={() => handleEdit(tournament)}
-              >
-                Edit
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
