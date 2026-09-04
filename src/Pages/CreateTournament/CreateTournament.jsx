@@ -319,11 +319,17 @@ const CreateTournament = () => {
         };
       }
 
+      const token = localStorage.getItem("token");
+
       const tournamentResponse = await axios.post(
         `${BACKEND}/api/tournaments`,
         tournamentPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
-
       const tournamentId =
         tournamentResponse.data?.tournament?._id ||
         tournamentResponse.data?._id ||
