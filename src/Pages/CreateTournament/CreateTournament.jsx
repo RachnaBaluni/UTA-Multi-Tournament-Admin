@@ -360,32 +360,55 @@ const CreateTournament = () => {
       );
 
       if (validDetails.length > 0) {
-        await axios.post(`${BACKEND}/api/tournament-details`, {
-          tournamentId,
-          details: validDetails,
-        });
+        await axios.post(
+          `${BACKEND}/api/tournament-details`,
+          {
+            tournamentId,
+            details: validDetails,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
       }
 
       const validPrizes = prizes.filter(
         (prize) => prize.key.trim() || prize.value.trim(),
       );
-
       if (validPrizes.length > 0) {
-        await axios.post(`${BACKEND}/api/prices-benifit`, {
-          tournamentId,
-          prizes: validPrizes,
-        });
+        await axios.post(
+          `${BACKEND}/api/prices-benifit`,
+          {
+            tournamentId,
+            prizes: validPrizes,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
       }
 
-      await axios.post(`${BACKEND}/api/venue`, {
-        tournamentId,
-        key: venue.key,
-        value: venue.value,
-        date: venue.date,
-        rules: venue.rules,
-        showing: venue.showing,
-        mapLink: venue.mapLink,
-      });
+      await axios.post(
+        `${BACKEND}/api/venue`,
+        {
+          tournamentId,
+          key: venue.key,
+          value: venue.value,
+          date: venue.date,
+          rules: venue.rules,
+          showing: venue.showing,
+          mapLink: venue.mapLink,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       toast.success("Master Tournament created successfully");
       setMessage("Master Tournament created successfully");
