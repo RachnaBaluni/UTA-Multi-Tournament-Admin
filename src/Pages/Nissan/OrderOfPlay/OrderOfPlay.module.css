@@ -559,3 +559,8 @@
   font-size: 13px;
   font-weight: 600;
 }
+.tournamentName {
+  margin: 0 0 5px;
+  font-size: 20px;
+  font-weight: 600;
+}
