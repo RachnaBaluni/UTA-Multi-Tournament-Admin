@@ -257,7 +257,7 @@ export default function OrderOfPlay() {
       sessionStorage.setItem("orderPlayDays", JSON.stringify(days));
     }
   }, [days]);
-  const [tournament, setTournament] = useState(null);
+
   const [newDayDate, setNewDayDate] = useState("");
   const [newCourtCount, setNewCourtCount] = useState(4);
   const [newMatchesPerCourt, setNewMatchesPerCourt] = useState({
@@ -273,6 +273,7 @@ export default function OrderOfPlay() {
   const [grid, setGrid] = useState([]);
   const [events, setEvents] = useState([]);
 
+  const [tournament, setTournament] = useState(null);
   const [notPlacedMatches, setNotPlacedMatches] = useState([]);
 
   const [courtCount, setCourtCount] = useState(4);
@@ -286,22 +287,6 @@ export default function OrderOfPlay() {
     3: 4,
     4: 4,
   });
-  const fetchTournament = async () => {
-    try {
-      const res = await api.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
-        {
-          withCredentials: true,
-        },
-      );
-
-      if (res.data.success) {
-        setTournament(res.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching tournament:", error);
-    }
-  };
 
   const [editingDayIndex, setEditingDayIndex] = useState(null);
   useEffect(() => {
@@ -327,7 +312,7 @@ export default function OrderOfPlay() {
 
   useEffect(() => {
     if (tournamentId) {
-      fetchtournament();
+      fetchTournament();
       fetchEvents();
     }
   }, [tournamentId]);
@@ -356,6 +341,23 @@ export default function OrderOfPlay() {
       fetchData();
     }
   }, [events, selectedDate]);
+
+  const fetchTournament = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -1671,10 +1673,13 @@ export default function OrderOfPlay() {
       {/* TOP BAR */}
 
       <div className={styles.topBar}>
-        <h2 className={styles.tournamentName}>
-          {tournament?.name || "Tournament"}
-        </h2>
-        <h1>ORDER OF PLAY</h1>
+        <div>
+          <h2 className={styles.tournamentName}>
+            {tournament?.name || "Tournament"}
+          </h2>
+
+          <h1>ORDER OF PLAY</h1>
+        </div>
 
         <div className={styles.buttonGroup}>
           <button className={styles.resetBtn} onClick={handleReset}>
