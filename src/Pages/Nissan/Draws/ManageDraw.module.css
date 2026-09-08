@@ -269,3 +269,12 @@
   padding: 10px;
   cursor: pointer;
 }
+.tournamentName {
+  margin: 0 0 5px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.manageDrawContainer h1 {
+  margin-top: 0;
+}

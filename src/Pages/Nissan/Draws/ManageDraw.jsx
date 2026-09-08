@@ -179,6 +179,7 @@ const Round = ({
 const ManageDraw = () => {
   const { tournamentId } = useParams();
   const [events, setEvents] = useState([]);
+  const [tournament, setTournament] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [draws, setDraws] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -204,6 +205,23 @@ const ManageDraw = () => {
       fetchDraws();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to replace BYE");
+    }
+  };
+
+  const fetchTournament = async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
     }
   };
   const fetchDraws = async () => {
@@ -299,7 +317,7 @@ const ManageDraw = () => {
         console.error("Error fetching events:", error);
       }
     };
-
+    fetchTournament();
     fetchEvents();
   }, [tournamentId]);
 
@@ -511,6 +529,10 @@ const ManageDraw = () => {
 
   return (
     <div className={styles.manageDrawContainer}>
+      <h2 className={styles.tournamentName}>
+        {tournament?.name || "Tournament"}
+      </h2>
+
       <h1>Manage Draws</h1>
       <div className={styles.eventFilterButtons}>
         {events.map((event) => (
