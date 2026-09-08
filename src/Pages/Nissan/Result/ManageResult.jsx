@@ -373,6 +373,7 @@ const ManageResult = () => {
   }, [tournamentId]);
 
   useEffect(() => {
+    fetchTournament();
     fetchDraws();
   }, [selectedEvent]);
 
