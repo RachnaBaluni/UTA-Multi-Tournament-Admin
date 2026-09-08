@@ -292,3 +292,8 @@
   margin: 6px 0;
   color: #555;
 }
+.tournamentName {
+  margin: 0 0 5px;
+  font-size: 20px;
+  font-weight: 600;
+}

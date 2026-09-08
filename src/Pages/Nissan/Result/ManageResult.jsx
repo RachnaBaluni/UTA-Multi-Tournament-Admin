@@ -29,7 +29,7 @@ const Match = ({
   }
 
   const [displayScore, setDisplayScore] = useState(initialScore || ""); // Initialize with initialScore
-  const [tournament, setTournament] = useState(null);
+
   useEffect(() => {
     setDisplayScore(initialScore || ""); // Update if initialScore changes
   }, [initialScore]);
@@ -38,22 +38,7 @@ const Match = ({
   const isWinner = team && matchWinnerId && team._id === matchWinnerId;
   const isLoser =
     team && matchWinnerId && opponentTeam && opponentTeam._id === matchWinnerId;
-  const fetchTournament = async () => {
-    try {
-      const res = await api.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
-        {
-          withCredentials: true,
-        },
-      );
 
-      if (res.data.success) {
-        setTournament(res.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching tournament:", error);
-    }
-  };
   const handleMatchSlotClick = async () => {
     if (!team || isWinnerSlot) {
       // Cannot select BYE/TBD or Winner slot
@@ -305,9 +290,26 @@ const Round = memo(
 const ManageResult = () => {
   const { tournamentId } = useParams();
   const [events, setEvents] = useState([]);
+  const [tournament, setTournament] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [draws, setDraws] = useState([]);
   const [loading, setLoading] = useState(false);
+  const fetchTournament = useCallback(async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  }, [tournamentId]);
 
   const fetchDraws = useCallback(async () => {
     // Wrapped in useCallback
@@ -368,12 +370,12 @@ const ManageResult = () => {
     };
 
     if (tournamentId) {
+      fetchTournament();
       fetchEvents();
     }
   }, [tournamentId]);
 
   useEffect(() => {
-    fetchTournament();
     fetchDraws();
   }, [selectedEvent]);
 
@@ -483,9 +485,11 @@ const ManageResult = () => {
 
   return (
     <div className={styles.manageResultContainer}>
-      {" "}
-      {/* Changed class name */}
-      <h1>Manage Results</h1> {/* Changed title */}
+      <h2 className={styles.tournamentName}>
+        {tournament?.name || "Tournament"}
+      </h2>
+
+      <h1>Manage Results</h1>
       <div className={styles.eventFilterButtons}>
         {events.map((event) => (
           <button
