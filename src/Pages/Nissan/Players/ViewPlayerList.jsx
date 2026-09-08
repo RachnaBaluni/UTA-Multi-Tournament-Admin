@@ -156,10 +156,10 @@ const ViewPlayerList = () => {
 
   return (
     <div className={styles.playerList}>
-      <h1>Player List</h1>
       {tournament && (
         <h2 className={styles.tournamentName}>{tournament.name}</h2>
       )}
+      <h1>Player List</h1>
       <div className={styles.stats}>
         <p>Total Players: {totalPlayers}</p>
         <p>Fee Paid: {feePaidPlayers}</p>

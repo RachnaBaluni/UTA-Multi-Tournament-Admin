@@ -29,7 +29,7 @@ const Match = ({
   }
 
   const [displayScore, setDisplayScore] = useState(initialScore || ""); // Initialize with initialScore
-
+  const [tournament, setTournament] = useState(null);
   useEffect(() => {
     setDisplayScore(initialScore || ""); // Update if initialScore changes
   }, [initialScore]);
@@ -38,7 +38,22 @@ const Match = ({
   const isWinner = team && matchWinnerId && team._id === matchWinnerId;
   const isLoser =
     team && matchWinnerId && opponentTeam && opponentTeam._id === matchWinnerId;
+  const fetchTournament = async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
 
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  };
   const handleMatchSlotClick = async () => {
     if (!team || isWinnerSlot) {
       // Cannot select BYE/TBD or Winner slot
