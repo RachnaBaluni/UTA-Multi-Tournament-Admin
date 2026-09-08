@@ -9,6 +9,7 @@ import { saveAs } from "file-saver";
 const ViewPlayerList = () => {
   const { tournamentId } = useParams();
   const [players, setPlayers] = useState([]);
+  const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nameSort, setNameSort] = useState("");
   const [event1Sort, setEvent1Sort] = useState("");
@@ -16,6 +17,22 @@ const ViewPlayerList = () => {
   const [event2Sort, setEvent2Sort] = useState("");
   const [event2PartnerSort, setEvent2PartnerSort] = useState("");
   const [citySort, setCitySort] = useState("");
+  const fetchTournament = async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  };
   const fetchPlayers = async () => {
     try {
       const start = Date.now();
@@ -75,6 +92,7 @@ const ViewPlayerList = () => {
   useEffect(() => {
     if (tournamentId) {
       fetchPlayers();
+      fetchTournament();
     }
   }, [tournamentId]);
 
@@ -139,6 +157,9 @@ const ViewPlayerList = () => {
   return (
     <div className={styles.playerList}>
       <h1>Player List</h1>
+      {tournament && (
+        <h2 className={styles.tournamentName}>{tournament.name}</h2>
+      )}
       <div className={styles.stats}>
         <p>Total Players: {totalPlayers}</p>
         <p>Fee Paid: {feePaidPlayers}</p>
