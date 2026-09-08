@@ -15,6 +15,24 @@ const RegistrationFields = () => {
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [tournament, setTournament] = useState(null);
+
+  const fetchTournament = async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  };
   useEffect(() => {
     const fetchTournamentFields = async () => {
       try {
@@ -40,6 +58,7 @@ const RegistrationFields = () => {
     };
 
     if (tournamentId) {
+      fetchTournament();
       fetchTournamentFields();
     }
   }, [tournamentId]);
