@@ -7,9 +7,28 @@ import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 const UpdateEvents = () => {
   const { tournamentId } = useParams();
   const [events, setEvents] = useState([]);
+  const [tournament, setTournament] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const fetchTournament = async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  };
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -41,6 +60,7 @@ const UpdateEvents = () => {
 
   useEffect(() => {
     if (tournamentId) {
+      fetchTournament();
       fetchEvents();
     }
   }, [tournamentId]);
@@ -78,7 +98,14 @@ const UpdateEvents = () => {
   return (
     <div className={styles.updateEvents}>
       <div className={styles.header}>
-        <h1>Update Events</h1>
+        <div>
+          <h2 className={styles.tournamentName}>
+            {tournament?.name || "Tournament"}
+          </h2>
+
+          <h1>Update Events</h1>
+        </div>
+
         <button className={styles.createButton} onClick={handleCreate}>
           <FiPlus /> Create Event
         </button>
