@@ -9,10 +9,27 @@ const ViewPlayerList = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [tournament, setTournament] = useState(null);
   const [modalData, setModalData] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
 
+  const fetchTournament = async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  };
   const viewPlayerJourney = async (playerId, playerName) => {
     try {
       setLoading(true);
@@ -48,6 +65,7 @@ const ViewPlayerList = () => {
   };
 
   useEffect(() => {
+    fetchTournament();
     fetchPlayers();
   }, [tournamentId]);
 
@@ -59,6 +77,9 @@ const ViewPlayerList = () => {
 
   return (
     <div className={styles.playerList}>
+      <h2 className={styles.tournamentName}>
+        {tournament?.name || "Tournament"}
+      </h2>
       <h1>View Player Journey through the Tournament</h1>
 
       <div className={styles.searchContainer}>

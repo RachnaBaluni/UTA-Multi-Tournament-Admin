@@ -50,6 +50,7 @@ const SortableItem = ({ id, item }) => {
 
 const UpdateTeamRanking = () => {
   const { tournamentId } = useParams();
+  const [tournament, setTournament] = useState(null);
   const [allTeams, setAllTeams] = useState([]);
   const [filteredTeams, setFilteredTeams] = useState([]);
   const [events, setEvents] = useState([]);
@@ -62,7 +63,22 @@ const UpdateTeamRanking = () => {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+  const fetchTournament = async () => {
+    try {
+      const res = await api.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/tournaments/${tournamentId}`,
+        {
+          withCredentials: true,
+        },
+      );
 
+      if (res.data.success) {
+        setTournament(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tournament:", error);
+    }
+  };
   const fetchAllTeams = async (resetSelection = false) => {
     setLoading(true);
     try {
@@ -93,6 +109,7 @@ const UpdateTeamRanking = () => {
 
   useEffect(() => {
     if (tournamentId) {
+      fetchTournament();
       fetchAllTeams(true);
     }
   }, [tournamentId]);
@@ -186,6 +203,9 @@ const UpdateTeamRanking = () => {
 
   return (
     <div className={styles.updateRanking}>
+      <h2 className={styles.tournamentName}>
+        {tournament?.name || "Tournament"}
+      </h2>
       <h1>Update Team Ranking</h1>
       <div className={styles.filters}>
         {events.map((event) => (
