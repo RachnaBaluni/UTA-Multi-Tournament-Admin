@@ -19,6 +19,8 @@ import OrderOfPlay from "./Pages/Nissan/OrderOfPlay/OrderOfPlay";
 import EditTournament from "./Pages/EditTournament/EditTournament";
 import CreateTournament from "./Pages/CreateTournament/CreateTournament";
 import UpdateTournamentDetails from "./Pages/TournamentDetails/UpdateTournamentDetails";
+import NormalPlayers from "./Pages/Players/NormalPlayers";
+import MemberPlayers from "./Pages/Players/MemberPlayers";
 import { Toaster } from "sonner";
 
 function App() {
@@ -58,6 +60,29 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/players/normal"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <NormalPlayers />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/players/member"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <MemberPlayers />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/users"
           element={

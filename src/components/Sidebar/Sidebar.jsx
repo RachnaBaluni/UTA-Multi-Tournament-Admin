@@ -22,7 +22,7 @@ import {
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isNissanOpen, setIsNissanOpen] = useState(false);
   const [isTournamentsOpen, setIsTournamentsOpen] = useState(false);
-
+  const [isPlayersOpen, setIsPlayersOpen] = useState(false);
   // Normal tournaments
   const [tournaments, setTournaments] = useState([]);
 
@@ -109,7 +109,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const toggleTournamentsMenu = () => {
     setIsTournamentsOpen((prev) => !prev);
   };
-
+  const togglePlayersMenu = () => {
+    setIsPlayersOpen((prev) => !prev);
+  };
   const toggleTournament = (tournamentId) => {
     setOpenTournaments((prev) => ({
       ...prev,
@@ -189,6 +191,51 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 >
                   <FiEdit className={styles.icon} />
                   Edit Tournament
+                </NavLink>
+              </li>
+            </ul>
+          )}
+        </li>
+
+        {/* =====================================================
+            ALL PLAYERS
+        ===================================================== */}
+        <li className={styles.collapsible}>
+          <div className={styles.collapsibleHeader} onClick={togglePlayersMenu}>
+            <FiUsers className={styles.icon} />
+
+            <span>All Players</span>
+
+            <FiChevronDown
+              className={`${styles.chevron} ${
+                isPlayersOpen ? styles.rotate : ""
+              }`}
+            />
+          </div>
+
+          {isPlayersOpen && (
+            <ul className={styles.submenu}>
+              {/* NORMAL PLAYERS */}
+              <li>
+                <NavLink
+                  to="/players/normal"
+                  className={({ isActive }) => (isActive ? styles.active : "")}
+                  onClick={toggleSidebar}
+                >
+                  <FiUser className={styles.icon} />
+                  Normal Players
+                </NavLink>
+              </li>
+
+              {/* MEMBER PLAYERS */}
+              <li>
+                <NavLink
+                  to="/players/member"
+                  className={({ isActive }) => (isActive ? styles.active : "")}
+                  onClick={toggleSidebar}
+                >
+                  <FiUsers className={styles.icon} />
+                  Member Players
                 </NavLink>
               </li>
             </ul>
