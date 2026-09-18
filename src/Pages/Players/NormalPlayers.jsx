@@ -13,14 +13,21 @@ const NormalPlayers = () => {
       try {
         const response = await axios.get(
           `${backendUrl}/api/player/all-players`,
-          { withCredentials: true },
+          {
+            withCredentials: true,
+          },
         );
+
+        console.log("ALL PLAYERS RESPONSE:", response.data);
 
         if (response.data.success) {
           setPlayers(response.data.data.normalPlayers || []);
         }
       } catch (error) {
-        console.error("Error fetching normal players:", error);
+        console.error(
+          "Error fetching normal players:",
+          error.response?.data || error,
+        );
       } finally {
         setLoading(false);
       }
@@ -54,12 +61,6 @@ const NormalPlayers = () => {
                 <th>Date of Birth</th>
                 <th>City</th>
                 <th>Tournaments Participated</th>
-                <th>Shirt Size</th>
-                <th>Food Preference</th>
-                <th>Stay</th>
-                <th>Fee Paid</th>
-                <th>Transaction Details</th>
-                <th>Fee Paid Admin</th>
               </tr>
             </thead>
 
@@ -75,12 +76,12 @@ const NormalPlayers = () => {
                     {/* Email */}
                     <td data-label="Email">{player.email || "-"}</td>
 
-                    {/* WhatsApp */}
+                    {/* WhatsApp Number */}
                     <td data-label="WhatsApp Number">
                       {player.whatsappNumber || "-"}
                     </td>
 
-                    {/* DOB */}
+                    {/* Date of Birth */}
                     <td data-label="Date of Birth">
                       {player.dob
                         ? new Date(player.dob).toLocaleDateString()
@@ -95,7 +96,10 @@ const NormalPlayers = () => {
                       {tournaments.length > 0 ? (
                         <div className={styles.tournamentList}>
                           {tournaments.map((tournament, index) => (
-                            <div key={index} className={styles.tournamentItem}>
+                            <div
+                              key={tournament.tournamentId || index}
+                              className={styles.tournamentItem}
+                            >
                               {tournament.tournamentName || "-"}
                             </div>
                           ))}
@@ -103,66 +107,6 @@ const NormalPlayers = () => {
                       ) : (
                         "-"
                       )}
-                    </td>
-
-                    {/* Shirt Size */}
-                    <td data-label="Shirt Size">
-                      {tournaments.length > 0
-                        ? tournaments.map((tournament, index) => (
-                            <div key={index}>{tournament.shirtSize || "-"}</div>
-                          ))
-                        : "-"}
-                    </td>
-
-                    {/* Food Preference */}
-                    <td data-label="Food Preference">
-                      {tournaments.length > 0
-                        ? tournaments.map((tournament, index) => (
-                            <div key={index}>{tournament.foodPref || "-"}</div>
-                          ))
-                        : "-"}
-                    </td>
-
-                    {/* Stay */}
-                    <td data-label="Stay">
-                      {tournaments.length > 0
-                        ? tournaments.map((tournament, index) => (
-                            <div key={index}>
-                              {tournament.accommodation === true
-                                ? "Yes"
-                                : tournament.accommodation === false
-                                  ? "No"
-                                  : "-"}
-                            </div>
-                          ))
-                        : "-"}
-                    </td>
-
-                    {/* Fee Paid */}
-                    <td data-label="Fee Paid">
-                      {tournaments.length > 0
-                        ? tournaments.map((tournament, index) => (
-                            <div key={index}>
-                              {tournament.feePaid ? "Yes" : "No"}
-                            </div>
-                          ))
-                        : "-"}
-                    </td>
-
-                    {/* Transaction Details */}
-                    <td data-label="Transaction Details">
-                      {tournaments.length > 0
-                        ? tournaments.map((tournament, index) => (
-                            <div key={index}>
-                              {tournament.transactionDetails || "-"}
-                            </div>
-                          ))
-                        : "-"}
-                    </td>
-
-                    {/* Fee Paid Admin */}
-                    <td data-label="Fee Paid Admin">
-                      {player.feePaidAdmin ? "Yes" : "No"}
                     </td>
                   </tr>
                 );
