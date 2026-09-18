@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./NormalPlayers.css";
+import "./NormalPlayers.module.css";
 
 const NormalPlayers = () => {
   const [players, setPlayers] = useState([]);
