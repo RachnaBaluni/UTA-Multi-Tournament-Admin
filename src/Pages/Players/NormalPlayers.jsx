@@ -37,6 +37,7 @@ const NormalPlayers = () => {
     <div className={styles.normalPlayers}>
       <div className={styles.header}>
         <h1>Normal Players</h1>
+
         <span className={styles.playerCount}>{players.length} Players</span>
       </div>
 
@@ -63,117 +64,109 @@ const NormalPlayers = () => {
             </thead>
 
             <tbody>
-              {players.map((player) => (
-                <tr key={player._id}>
-                  {/* Name */}
-                  <td data-label="Name">{player.name || "-"}</td>
+              {players.map((player) => {
+                const tournaments = player.tournaments || [];
 
-                  {/* Email */}
-                  <td data-label="Email">{player.email || "-"}</td>
+                return (
+                  <tr key={player._id}>
+                    {/* Name */}
+                    <td data-label="Name">{player.name || "-"}</td>
 
-                  {/* WhatsApp */}
-                  <td data-label="WhatsApp Number">
-                    {player.whatsappNumber || "-"}
-                  </td>
+                    {/* Email */}
+                    <td data-label="Email">{player.email || "-"}</td>
 
-                  {/* DOB */}
-                  <td data-label="Date of Birth">
-                    {player.dob
-                      ? new Date(player.dob).toLocaleDateString()
-                      : "-"}
-                  </td>
+                    {/* WhatsApp */}
+                    <td data-label="WhatsApp Number">
+                      {player.whatsappNumber || "-"}
+                    </td>
 
-                  {/* City */}
-                  <td data-label="City">{player.city || "-"}</td>
+                    {/* DOB */}
+                    <td data-label="Date of Birth">
+                      {player.dob
+                        ? new Date(player.dob).toLocaleDateString()
+                        : "-"}
+                    </td>
 
-                  {/* Tournaments */}
-                  <td data-label="Tournaments Participated">
-                    {player.tournamentRegistrations?.length > 0 ? (
-                      <div className={styles.tournamentList}>
-                        {player.tournamentRegistrations.map(
-                          (registration, index) => (
+                    {/* City */}
+                    <td data-label="City">{player.city || "-"}</td>
+
+                    {/* Tournaments */}
+                    <td data-label="Tournaments Participated">
+                      {tournaments.length > 0 ? (
+                        <div className={styles.tournamentList}>
+                          {tournaments.map((tournament, index) => (
                             <div key={index} className={styles.tournamentItem}>
-                              {registration.tournamentId?.name || "-"}
+                              {tournament.tournamentName || "-"}
                             </div>
-                          ),
-                        )}
-                      </div>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
+                          ))}
+                        </div>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
 
-                  {/* Shirt Size */}
-                  <td data-label="Shirt Size">
-                    {player.tournamentRegistrations?.length > 0
-                      ? player.tournamentRegistrations.map(
-                          (registration, index) => (
+                    {/* Shirt Size */}
+                    <td data-label="Shirt Size">
+                      {tournaments.length > 0
+                        ? tournaments.map((tournament, index) => (
+                            <div key={index}>{tournament.shirtSize || "-"}</div>
+                          ))
+                        : "-"}
+                    </td>
+
+                    {/* Food Preference */}
+                    <td data-label="Food Preference">
+                      {tournaments.length > 0
+                        ? tournaments.map((tournament, index) => (
+                            <div key={index}>{tournament.foodPref || "-"}</div>
+                          ))
+                        : "-"}
+                    </td>
+
+                    {/* Stay */}
+                    <td data-label="Stay">
+                      {tournaments.length > 0
+                        ? tournaments.map((tournament, index) => (
                             <div key={index}>
-                              {registration.shirtSize || "-"}
+                              {tournament.accommodation === true
+                                ? "Yes"
+                                : tournament.accommodation === false
+                                  ? "No"
+                                  : "-"}
                             </div>
-                          ),
-                        )
-                      : "-"}
-                  </td>
+                          ))
+                        : "-"}
+                    </td>
 
-                  {/* Food Preference */}
-                  <td data-label="Food Preference">
-                    {player.tournamentRegistrations?.length > 0
-                      ? player.tournamentRegistrations.map(
-                          (registration, index) => (
+                    {/* Fee Paid */}
+                    <td data-label="Fee Paid">
+                      {tournaments.length > 0
+                        ? tournaments.map((tournament, index) => (
                             <div key={index}>
-                              {registration.foodPref || "-"}
+                              {tournament.feePaid ? "Yes" : "No"}
                             </div>
-                          ),
-                        )
-                      : "-"}
-                  </td>
+                          ))
+                        : "-"}
+                    </td>
 
-                  {/* Stay */}
-                  <td data-label="Stay">
-                    {player.tournamentRegistrations?.length > 0
-                      ? player.tournamentRegistrations.map(
-                          (registration, index) => (
+                    {/* Transaction Details */}
+                    <td data-label="Transaction Details">
+                      {tournaments.length > 0
+                        ? tournaments.map((tournament, index) => (
                             <div key={index}>
-                              {registration.stay ? "Yes" : "No"}
+                              {tournament.transactionDetails || "-"}
                             </div>
-                          ),
-                        )
-                      : "-"}
-                  </td>
+                          ))
+                        : "-"}
+                    </td>
 
-                  {/* Fee Paid */}
-                  <td data-label="Fee Paid">
-                    {player.tournamentRegistrations?.length > 0
-                      ? player.tournamentRegistrations.map(
-                          (registration, index) => (
-                            <div key={index}>
-                              {registration.feePaid ? "Yes" : "No"}
-                            </div>
-                          ),
-                        )
-                      : "-"}
-                  </td>
-
-                  {/* Transaction Details */}
-                  <td data-label="Transaction Details">
-                    {player.tournamentRegistrations?.length > 0
-                      ? player.tournamentRegistrations.map(
-                          (registration, index) => (
-                            <div key={index}>
-                              {registration.transactionDetails || "-"}
-                            </div>
-                          ),
-                        )
-                      : "-"}
-                  </td>
-
-                  {/* Fee Paid Admin */}
-                  <td data-label="Fee Paid Admin">
-                    {player.feePaidAdmin ? "Yes" : "No"}
-                  </td>
-                </tr>
-              ))}
+                    {/* Fee Paid Admin */}
+                    <td data-label="Fee Paid Admin">
+                      {player.feePaidAdmin ? "Yes" : "No"}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
