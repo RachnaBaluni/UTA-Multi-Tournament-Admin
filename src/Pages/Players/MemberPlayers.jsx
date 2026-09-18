@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./MemberPlayers.css";
+import styles from "./MemberPlayers.module.css";
 
 const MemberPlayers = () => {
   const [players, setPlayers] = useState([]);
@@ -32,24 +32,24 @@ const MemberPlayers = () => {
   }, [backendUrl]);
 
   if (loading) {
-    return <div className="loading">Loading member players...</div>;
+    return <div className={styles.loading}>Loading member players...</div>;
   }
 
   return (
-    <div className="memberPlayers">
+    <div className={styles.memberPlayers}>
       {/* Header */}
-      <div className="header">
+      <div className={styles.header}>
         <h1>Member Players</h1>
 
-        <span className="playerCount">{players.length} Players</span>
+        <span className={styles.playerCount}>{players.length} Players</span>
       </div>
 
       {/* No Players */}
       {players.length === 0 ? (
-        <div className="noPlayers">No member players found.</div>
+        <div className={styles.noPlayers}>No member players found.</div>
       ) : (
-        <div className="tableContainer">
-          <table className="playersTable">
+        <div className={styles.tableContainer}>
+          <table className={styles.playersTable}>
             <thead>
               <tr>
                 <th>Name</th>
